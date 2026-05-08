@@ -93,7 +93,19 @@ export default function V11() {
         <meta name="description" content="Premium vehicles, transparent prices, and friendly local service. Drive Bali, make it unforgettable." />
       </Helmet>
 
-      <div className="min-h-screen bg-white font-sans text-[#1a1a1a] antialiased">
+      <div
+        className="min-h-screen bg-white font-sans text-[#1a1a1a] antialiased"
+        style={{
+          // Override the global CSS variables from index.css that get auto-switched
+          // to dark mode based on prefers-color-scheme. Force light values here.
+          "--text": "#6b7280",
+          "--text-h": "#1a1a1a",
+          "--bg": "#ffffff",
+          "--border": "#e5e7eb",
+          colorScheme: "light",
+          color: "#1a1a1a",
+        }}
+      >
         {/* ==================== 1. HEADER / NAVBAR ==================== */}
         <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -163,91 +175,103 @@ export default function V11() {
         </header>
 
         {/* ==================== 2. HERO SECTION ==================== */}
-        <section className="relative bg-white pt-12 lg:pt-16 pb-12 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-              {/* Left content */}
-              <div className="order-2 lg:order-1">
-                {/* Badge */}
-                <span
-                  className="inline-block px-3 py-1.5 text-[11px] font-bold tracking-[0.15em] uppercase rounded-full mb-7"
-                  style={{ backgroundColor: CREAM, color: "#a16e2e" }}
-                >
-                  ✦ RELIABLE. FLEXIBLE. ISLAND-WIDE.
-                </span>
+        <section className="relative bg-white pt-2 lg:pt-4 pb-10 lg:pb-12 overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-10 items-center">
+            {/* Left content — padded to align with the page's max-w-7xl gutter */}
+            <div className="order-2 lg:order-1 px-4 sm:px-6 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))] lg:pr-0">
+              {/* Badge */}
+              <span
+                className="inline-block px-3 py-1.5 text-[11px] font-bold tracking-[0.15em] uppercase rounded-full mb-7"
+                style={{ backgroundColor: CREAM, color: "#a16e2e" }}
+              >
+                ✦ RELIABLE. FLEXIBLE. ISLAND-WIDE.
+              </span>
 
-                {/* Headline */}
-                <h1 className="text-4xl sm:text-5xl lg:text-[52px] xl:text-[58px] font-bold leading-[1.1] tracking-[-0.02em] text-[#1a1a1a] mb-6">
-                  Drive Bali.<br />
-                  Make it unforgettable.
-                </h1>
+              {/* Headline */}
+              <h1
+                className="font-bold leading-[1.05] tracking-[-0.02em] mb-6"
+                style={{
+                  color: "#0a0a0a",
+                  margin: "0 0 1.5rem 0",
+                  fontSize: "clamp(2.5rem, 1.5rem + 3vw, 3.625rem)",
+                  letterSpacing: "-0.02em",
+                  fontWeight: 700,
+                }}
+              >
+                Drive Bali.<br />
+                Make it unforgettable.
+              </h1>
 
-                {/* Subhead */}
-                <p className="text-gray-500 text-base lg:text-[17px] leading-relaxed mb-8 max-w-xl">
-                  Premium vehicles, transparent prices, and friendly local service.<br />
-                  Airport pickup, hotel delivery, and 24/7 support across Bali.
-                </p>
+              {/* Subhead */}
+              <p className="text-gray-500 text-base lg:text-[17px] leading-relaxed mb-14 max-w-xl">
+                Premium vehicles, transparent prices, and friendly local service.<br />
+                Airport pickup, hotel delivery, and 24/7 support across Bali.
+              </p>
 
-                {/* 3 Feature row */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8 max-w-2xl">
-                  {[
-                    { icon: Wallet, title: "No hidden fees", desc: "What you see is what you pay" },
-                    { icon: Truck, title: "Free delivery", desc: "Airport, hotel, villa and anywhere in Bali" },
-                    { icon: Clock, title: "24/7 support", desc: "Local team ready to help anytime" },
-                  ].map(({ icon: Icon, title, desc }) => (
-                    <div key={title} className="flex items-start gap-2.5">
-                      <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "#f0f5f5" }}>
-                        <Icon className="w-4 h-4" style={{ color: TEAL }} />
-                      </div>
-                      <div className="leading-tight">
-                        <div className="font-semibold text-[#1a1a1a] text-sm">{title}</div>
-                        <div className="text-xs text-gray-400 mt-1 leading-relaxed">{desc}</div>
-                      </div>
+              {/* 3 Feature row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 my-2 max-w-2xl">
+                {[
+                  { icon: Wallet, title: "No hidden fees", desc: "What you see is what you pay" },
+                  { icon: Truck, title: "Free delivery", desc: "Airport, hotel, villa and anywhere in Bali" },
+                  { icon: Clock, title: "24/7 support", desc: "Local team ready to help anytime" },
+                ].map(({ icon: Icon, title, desc }) => (
+                  <div key={title} className="flex items-start gap-2.5">
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "#f0f5f5" }}>
+                      <Icon className="w-4 h-4" style={{ color: TEAL }} />
                     </div>
-                  ))}
-                </div>
-
-                {/* Social proof */}
-                <div className="flex items-center gap-4">
-                  <div className="flex -space-x-2">
-                    {[1, 2, 3].map((i) => (
-                      <img
-                        key={i}
-                        src={`https://i.pravatar.cc/100?img=${i + 10}`}
-                        alt="Customer"
-                        className="w-8 h-8 rounded-full border-2 border-white object-cover"
-                      />
-                    ))}
+                    <div className="leading-tight">
+                      <div className="font-semibold text-[#1a1a1a] text-sm">{title}</div>
+                      <div className="text-xs text-gray-400 mt-1 leading-relaxed">{desc}</div>
+                    </div>
                   </div>
-                  <div className="text-sm font-semibold text-[#1a1a1a]">10,000+ happy customers</div>
-                  <div className="hidden sm:flex items-center gap-1 ml-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-[#22c55e] text-[#22c55e]" />
-                    ))}
-                    <span className="text-xs text-gray-500 ml-1">4.9/5</span>
-                  </div>
-                </div>
+                ))}
               </div>
 
-              {/* Right Image */}
-              <div className="order-1 lg:order-2 relative">
-                <div className="relative aspect-[5/4] lg:aspect-[6/5]">
-                  {/* Oval gradient mask container */}
-                  <div className="absolute inset-0 rounded-[55%_45%_45%_55%/55%_50%_50%_45%] overflow-hidden" style={{ backgroundColor: "#e7eaef" }}>
+              {/* Social proof */}
+              <div className="flex items-center gap-4">
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map((i) => (
                     <img
-                      src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1100&q=80"
-                      alt="Bali gates with cars"
-                      className="w-full h-full object-cover"
+                      key={i}
+                      src={`https://i.pravatar.cc/100?img=${i + 10}`}
+                      alt="Customer"
+                      className="w-8 h-8 rounded-full border-2 border-white object-cover"
                     />
-                  </div>
-
-                  {/* Best Price Guarantee circular badge */}
-                  <div className="absolute top-6 right-6 lg:top-12 lg:right-8 w-20 h-20 lg:w-24 lg:h-24 bg-white rounded-full shadow-xl flex flex-col items-center justify-center text-center border border-gray-100">
-                    <Shield className="w-5 h-5 mb-1" style={{ color: TEAL }} />
-                    <div className="text-[8px] lg:text-[9px] font-bold leading-tight" style={{ color: TEAL }}>BEST PRICE</div>
-                    <div className="text-[8px] lg:text-[9px] font-bold leading-tight" style={{ color: TEAL }}>GUARANTEE</div>
-                  </div>
+                  ))}
                 </div>
+                <div className="text-sm font-semibold text-[#1a1a1a]">10,000+ happy customers</div>
+                <div className="hidden sm:flex items-center gap-1 ml-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-3.5 h-3.5 fill-[#22c55e] text-[#22c55e]" />
+                  ))}
+                  <span className="text-xs text-gray-500 ml-1">4.9/5</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Image — bleeds to the viewport's right edge to match the design */}
+            <div className="order-1 lg:order-2 relative w-full">
+              <div
+                className="relative w-full h-[300px] sm:h-[380px] lg:h-[460px] xl:h-[500px]"
+              >
+                <img
+                  src="/images/hero.png"
+                  alt="Modern SUVs parked at Bali gates with ocean and palm trees at sunset"
+                  className="absolute inset-0 w-full h-full object-contain"
+                  style={{ display: "block", objectPosition: "center" }}
+                  loading="eager"
+                  onError={(e) => {
+                    // Fallback to Unsplash if local file fails to load
+                    const fallbacks = [
+                      "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&q=80",
+                      "https://images.unsplash.com/photo-1555400038-63f5ba517a47?auto=format&fit=crop&w=1200&q=80",
+                    ];
+                    const current = e.currentTarget.src;
+                    const next = fallbacks.find((u) => !current.includes(u.split("?")[0].split("/").pop()));
+                    if (next) e.currentTarget.src = next;
+                  }}
+                />
+
               </div>
             </div>
           </div>
@@ -310,11 +334,11 @@ export default function V11() {
         </section>
 
         {/* ==================== 4. SPECIAL OFFERS ==================== */}
-        <section id="deals" className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+        <section id="deals" className="pt-6 pb-8 lg:pt-8 lg:pb-10 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            <div className="flex items-end justify-between mb-8">
+            <div className="flex items-end justify-between mb-5">
               <div>
-                <h2 className="text-2xl lg:text-[28px] font-bold text-[#1a1a1a] tracking-tight">Special offers for your Bali trip</h2>
+                <h2 className="font-bold tracking-tight" style={{ color: "#0a0a0a", margin: 0, fontSize: "clamp(1.5rem, 1rem + 1vw, 1.75rem)", letterSpacing: "-0.02em", fontWeight: 700 }}>Special offers for your Bali trip</h2>
               </div>
               <a href="#all-deals" className="hidden sm:flex items-center gap-1 text-sm font-semibold transition-colors" style={{ color: TEAL }}>
                 View all deals <ArrowRight className="w-4 h-4" />
@@ -329,7 +353,7 @@ export default function V11() {
                   meta: "Min. 3 days rental",
                   discount: "15%",
                   bg: "#fef5ec",
-                  img: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=400&q=80",
+                  img: "/images/mercy.png",
                 },
                 {
                   title: "Weekend Escape",
@@ -337,7 +361,7 @@ export default function V11() {
                   meta: "Valid Fri – Sun",
                   discount: "10%",
                   bg: "#fef0e1",
-                  img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=400&q=80",
+                  img: "/images/mercy.png",
                 },
                 {
                   title: "Long Stay Value",
@@ -345,7 +369,7 @@ export default function V11() {
                   meta: "Min. 7 days rental",
                   discount: "20%",
                   bg: "#fff8e8",
-                  img: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=400&q=80",
+                  img: "/images/mercy.png",
                 },
                 {
                   title: "Family Adventure",
@@ -353,26 +377,34 @@ export default function V11() {
                   meta: "SUV & Van only",
                   discount: "10%",
                   bg: "#fef5ec",
-                  img: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=400&q=80",
+                  img: "/images/mercy.png",
                 },
               ].map((deal) => (
-                <div key={deal.title} className="rounded-2xl p-5 relative overflow-hidden cursor-pointer group" style={{ backgroundColor: deal.bg }}>
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-[#1a1a1a] text-base lg:text-lg leading-tight">{deal.title}</h3>
-                    <div className="bg-white rounded-md px-2.5 py-1 text-center shrink-0 ml-2 border border-orange-100" style={{ minWidth: "48px" }}>
-                      <div className="text-sm font-bold text-orange-500 leading-none">{deal.discount}</div>
-                      <div className="text-[8px] font-bold text-orange-500 mt-0.5 tracking-wider">OFF</div>
-                    </div>
+                <div key={deal.title} className="rounded-2xl p-4 lg:p-5 relative overflow-hidden cursor-pointer group min-h-[200px] lg:min-h-[220px] flex flex-col" style={{ backgroundColor: deal.bg }}>
+                  {/* Discount badge — absolute so it doesn't affect title/desc spacing */}
+                  <div className="absolute top-4 right-4 lg:top-5 lg:right-5 bg-white rounded-md px-2 py-1 text-center border border-orange-100 z-10" style={{ minWidth: "44px" }}>
+                    <div className="text-[13px] font-bold text-orange-500 leading-none">{deal.discount}</div>
+                    <div className="text-[8px] font-bold text-orange-500 mt-0.5 tracking-wider">OFF</div>
                   </div>
-                  <p className="text-xs text-gray-500 leading-relaxed mb-2">{deal.desc}</p>
-                  <p className="text-[10px] text-gray-400 mb-4">{deal.meta}</p>
-                  <div className="relative h-20 -mx-2 -mb-2">
-                    <img
-                      src={deal.img}
-                      alt={deal.title}
-                      className="absolute bottom-0 right-0 w-full h-full object-contain object-bottom group-hover:scale-105 transition-transform duration-500"
-                    />
+
+                  {/* Title + description — pr-14 keeps them clear of the absolute-positioned badge */}
+                  <div className="pr-14 relative z-10">
+                    <h3 className="font-bold text-[#1a1a1a] text-base lg:text-lg leading-tight mb-1">{deal.title}</h3>
+                    <p className="text-xs text-gray-500 leading-relaxed mb-3">{deal.desc}</p>
                   </div>
+
+                  {/* Spacer to push meta + image to the bottom */}
+                  <div className="flex-1" />
+
+                  {/* Meta — bottom left */}
+                  <p className="text-[10px] text-gray-400 relative z-10">{deal.meta}</p>
+
+                  {/* Car image — bottom right, bleeding slightly off the right edge */}
+                  <img
+                    src={deal.img}
+                    alt={deal.title}
+                    className="absolute bottom-2 -right-2 lg:-right-3 w-[55%] lg:w-[58%] h-auto object-contain pointer-events-none group-hover:scale-105 transition-transform duration-500"
+                  />
                 </div>
               ))}
             </div>
@@ -380,10 +412,10 @@ export default function V11() {
         </section>
 
         {/* ==================== 5. FEATURED FLEET ==================== */}
-        <section id="vehicles" className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+        <section id="vehicles" className="pt-6 pb-8 lg:pt-8 lg:pb-10 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            <div className="flex items-end justify-between mb-8">
-              <h2 className="text-2xl lg:text-[28px] font-bold text-[#1a1a1a] tracking-tight">Featured fleet</h2>
+            <div className="flex items-end justify-between mb-5">
+              <h2 className="font-bold tracking-tight" style={{ color: "#0a0a0a", margin: 0, fontSize: "clamp(1.5rem, 1rem + 1vw, 1.75rem)", letterSpacing: "-0.02em", fontWeight: 700 }}>Featured fleet</h2>
               <a href="#all-vehicles" className="hidden sm:flex items-center gap-1 text-sm font-semibold transition-colors" style={{ color: TEAL }}>
                 View all vehicles <ArrowRight className="w-4 h-4" />
               </a>
@@ -395,24 +427,24 @@ export default function V11() {
                   name: "Toyota Avanza",
                   seats: 7, trans: "Automatic", cc: "1.5L",
                   price: "32",
-                  img: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=500&q=80",
+                  img: "/images/mercy.png",
                 },
                 {
                   name: "Toyota Rush",
                   seats: 7, trans: "Automatic", cc: "1.5L",
                   price: "45",
-                  img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=500&q=80",
+                  img: "/images/mercy.png",
                 },
                 {
                   name: "Honda HR-V",
                   seats: 5, trans: "Automatic", cc: "1.8L",
                   price: "55",
-                  img: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=500&q=80",
+                  img: "/images/mercy.png",
                 },
               ].map((car) => (
-                <div key={car.name} className="bg-[#f8f8f6] rounded-2xl p-5 hover:shadow-lg transition-shadow">
+                <div key={car.name} className="bg-[#f8f8f6] rounded-2xl p-4 lg:p-5 hover:shadow-lg transition-shadow">
                   <h3 className="font-bold text-[#1a1a1a] text-base mb-2">{car.name}</h3>
-                  <div className="flex items-center gap-3 lg:gap-4 mb-4 text-xs text-gray-500">
+                  <div className="flex items-center gap-3 lg:gap-4 mb-3 text-xs text-gray-500">
                     <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {car.seats} Seats</span>
                     <span className="flex items-center gap-1"><Cog className="w-3.5 h-3.5" /> {car.trans}</span>
                     <span className="flex items-center gap-1"><Gauge className="w-3.5 h-3.5" /> {car.cc}</span>
@@ -421,12 +453,12 @@ export default function V11() {
                   <div className="grid grid-cols-2 gap-2 items-center">
                     <div>
                       <div className="text-3xl lg:text-[32px] font-bold leading-none text-[#1a1a1a]">${car.price}</div>
-                      <div className="text-xs text-gray-400 mt-1 mb-4">/day</div>
+                      <div className="text-xs text-gray-400 mt-1 mb-3">/day</div>
                       <button className="px-4 py-1.5 border-2 border-[#1d4046] text-[#1d4046] text-xs font-semibold rounded-md hover:bg-[#1d4046] hover:text-white transition-colors">
                         View details
                       </button>
                     </div>
-                    <div className="relative h-24">
+                    <div className="relative h-20">
                       <img src={car.img} alt={car.name} className="absolute inset-0 w-full h-full object-contain" />
                     </div>
                   </div>
@@ -435,14 +467,17 @@ export default function V11() {
             </div>
 
             {/* Trust banner */}
-            <div className="bg-white border border-gray-100 rounded-2xl p-5 lg:p-6 grid grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+            <div className="bg-white border border-gray-100 rounded-2xl p-5 lg:p-6 grid grid-cols-2 lg:grid-cols-4 gap-y-5">
               {[
                 { icon: CheckCircle, title: "Well-maintained vehicles", desc: "Clean, safe & reliable" },
                 { icon: Tag, title: "Transparent pricing", desc: "No hidden fees" },
                 { icon: MapPin, title: "Island-wide support", desc: "We're here for you" },
                 { icon: Users, title: "Trusted by travelers", desc: "10,000+ 5-star reviews" },
-              ].map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="flex items-start gap-3">
+              ].map(({ icon: Icon, title, desc }, idx) => (
+                <div
+                  key={title}
+                  className={`flex items-start gap-3 px-4 lg:px-6 ${idx > 0 ? "lg:border-l lg:border-gray-100" : ""}`}
+                >
                   <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "#f0f5f5" }}>
                     <Icon className="w-4 h-4" style={{ color: TEAL }} />
                   </div>
@@ -457,10 +492,10 @@ export default function V11() {
         </section>
 
         {/* ==================== 6. TOP DESTINATIONS ==================== */}
-        <section id="destinations" className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+        <section id="destinations" className="pt-6 pb-8 lg:pt-8 lg:pb-10 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            <div className="flex items-end justify-between mb-8">
-              <h2 className="text-2xl lg:text-[28px] font-bold text-[#1a1a1a] tracking-tight">Top destinations in Bali</h2>
+            <div className="flex items-end justify-between mb-5">
+              <h2 className="font-bold tracking-tight" style={{ color: "#0a0a0a", margin: 0, fontSize: "clamp(1.5rem, 1rem + 1vw, 1.75rem)", letterSpacing: "-0.02em", fontWeight: 700 }}>Top destinations in Bali</h2>
               <a href="#all-destinations" className="hidden sm:flex items-center gap-1 text-sm font-semibold transition-colors" style={{ color: TEAL }}>
                 Explore more <ArrowRight className="w-4 h-4" />
               </a>
@@ -486,7 +521,7 @@ export default function V11() {
                 {
                   name: "Nusa Penida",
                   desc: "Crystal waters & iconic views",
-                  img: "https://images.unsplash.com/photo-1589817864531-ef00b149c23a?auto=format&fit=crop&w=600&q=80",
+                  img: "https://images.unsplash.com/photo-1604999333679-b86d54738315?auto=format&fit=crop&w=600&q=80",
                 },
                 {
                   name: "Canggu",
@@ -514,10 +549,10 @@ export default function V11() {
         </section>
 
         {/* ==================== 7. TESTIMONIALS ==================== */}
-        <section id="reviews" className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+        <section id="reviews" className="pt-6 pb-8 lg:pt-8 lg:pb-10 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
-              <h2 className="text-2xl lg:text-[28px] font-bold text-[#1a1a1a] tracking-tight">Loved by travelers</h2>
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
+              <h2 className="font-bold tracking-tight" style={{ color: "#0a0a0a", margin: 0, fontSize: "clamp(1.5rem, 1rem + 1vw, 1.75rem)", letterSpacing: "-0.02em", fontWeight: 700 }}>Loved by travelers</h2>
               <div className="flex items-center gap-3 text-sm">
                 <span className="font-bold text-[#1a1a1a]">Excellent</span>
                 <div className="flex gap-0.5">
@@ -597,11 +632,20 @@ export default function V11() {
         </section>
 
         {/* ==================== 8. CTA BANNER ==================== */}
-        <section className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
+        <section className="pt-6 pb-10 lg:pt-8 lg:pb-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto rounded-3xl overflow-hidden relative" style={{ backgroundColor: TEAL }}>
             <div className="grid lg:grid-cols-[1fr_1fr]">
               <div className="p-8 lg:p-12 z-10">
-                <h2 className="text-3xl lg:text-4xl xl:text-[40px] font-bold text-white leading-tight mb-3">
+                <h2
+                  className="font-bold leading-tight"
+                  style={{
+                    color: "#ffffff",
+                    margin: "0 0 0.75rem 0",
+                    fontSize: "clamp(1.875rem, 1.25rem + 1.5vw, 2.5rem)",
+                    letterSpacing: "-0.01em",
+                    fontWeight: 700,
+                  }}
+                >
                   Ready to explore Bali?
                 </h2>
                 <p className="text-white/80 text-base mb-7 max-w-md">
@@ -647,7 +691,7 @@ export default function V11() {
         </section>
 
         {/* ==================== 9. FOOTER ==================== */}
-        <footer className="py-12 lg:py-16 px-4 sm:px-6 lg:px-8 bg-white border-t border-gray-100">
+        <footer className="py-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-white border-t border-gray-100">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-6 pb-10 mb-6 border-b border-gray-100">
               {/* Brand */}
@@ -684,10 +728,6 @@ export default function V11() {
                 {
                   head: "COMPANY",
                   items: ["About us", "Careers", "Blog", "Terms & conditions", "Privacy policy"],
-                },
-                {
-                  head: "SERVICES",
-                  items: ["Airport pickup", "Hotel delivery", "Driver services", "Travel guide", "FAQ"],
                 },
                 {
                   head: "RESOURCES",
