@@ -89,7 +89,7 @@ export default function V11() {
   return (
     <>
       <Helmet>
-        <title>Auto Ultimate · Bali Car Rental</title>
+        <title>Bali Trans · Bali Car Rental</title>
         <meta name="description" content="Premium vehicles, transparent prices, and friendly local service. Drive Bali, make it unforgettable." />
       </Helmet>
 
@@ -109,7 +109,7 @@ export default function V11() {
         {/* ==================== 1. HEADER / NAVBAR ==================== */}
         <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16 lg:h-20">
+            <div className="flex items-center justify-between h-12 lg:h-14">
               {/* Logo */}
               <a href="/" className="flex items-center gap-2.5 shrink-0">
                 <div className="w-10 h-10 rounded-md flex items-center justify-center" style={{ backgroundColor: TEAL }}>
@@ -118,7 +118,7 @@ export default function V11() {
                   </svg>
                 </div>
                 <div className="leading-tight">
-                  <div className="font-bold text-[15px] tracking-wide" style={{ color: TEAL }}>AUTO ULTIMATE</div>
+                  <div className="font-bold text-[15px] tracking-wide" style={{ color: TEAL }}>BALI TRANS</div>
                   <div className="text-[10px] tracking-[0.15em] uppercase text-gray-400 -mt-0.5">Bali Car Rental</div>
                 </div>
               </a>
@@ -175,13 +175,13 @@ export default function V11() {
         </header>
 
         {/* ==================== 2. HERO SECTION ==================== */}
-        <section className="relative bg-white pt-2 lg:pt-4 pb-10 lg:pb-12 overflow-hidden">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-10 items-center">
+        <section className="relative bg-white pt-4 lg:pt-4 pb-8 lg:pb-12 overflow-hidden">
+          <div className="grid lg:grid-cols-2 gap-4 lg:gap-10 items-center">
             {/* Left content — padded to align with the page's max-w-7xl gutter */}
-            <div className="order-2 lg:order-1 px-4 sm:px-6 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))] lg:pr-0">
+            <div className="order-2 lg:order-1 px-4 sm:px-6 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))] lg:pr-0 text-center lg:text-left">
               {/* Badge */}
               <span
-                className="inline-block px-3 py-1.5 text-[11px] font-bold tracking-[0.15em] uppercase rounded-full mb-7"
+                className="inline-block px-3 py-1.5 text-[10px] lg:text-[11px] font-bold tracking-[0.15em] uppercase rounded-full mb-3 lg:mb-7"
                 style={{ backgroundColor: CREAM, color: "#a16e2e" }}
               >
                 ✦ RELIABLE. FLEXIBLE. ISLAND-WIDE.
@@ -189,57 +189,73 @@ export default function V11() {
 
               {/* Headline */}
               <h1
-                className="font-bold leading-[1.05] tracking-[-0.02em] mb-6"
+                className="font-bold leading-[1.05] tracking-[-0.02em] mb-3 lg:mb-6"
                 style={{
                   color: "#0a0a0a",
-                  margin: "0 0 1.5rem 0",
-                  fontSize: "clamp(2.5rem, 1.5rem + 3vw, 3.625rem)",
+                  margin: "0 0 0.75rem 0",
+                  fontSize: "clamp(2rem, 1.25rem + 3vw, 3.625rem)",
                   letterSpacing: "-0.02em",
                   fontWeight: 700,
                 }}
               >
-                Drive Bali.<br />
-                Make it unforgettable.
+                Drive Bali. Make it<br className="hidden lg:inline" /> unforgettable.
               </h1>
 
               {/* Subhead */}
-              <p className="text-gray-500 text-base lg:text-[17px] leading-relaxed mb-14 max-w-xl">
-                Premium vehicles, transparent prices, and friendly local service.<br />
-                Airport pickup, hotel delivery, and 24/7 support across Bali.
+              <p className="text-gray-500 text-sm lg:text-[17px] leading-relaxed mb-5 lg:mb-14 max-w-xl mx-auto lg:mx-0">
+                Premium vehicles, transparent prices, and friendly local service. Airport pickup, hotel delivery, and 24/7 support across Bali.
               </p>
 
+              {/* CTA buttons — mobile only */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-6 lg:hidden">
+                <a
+                  href="#book"
+                  className="flex-1 px-6 py-3 rounded-lg font-semibold text-white text-sm text-center shadow-md"
+                  style={{ backgroundColor: TEAL }}
+                >
+                  Book your ride
+                </a>
+                <a
+                  href="#vehicles"
+                  className="flex-1 px-6 py-3 rounded-lg font-semibold text-sm text-center border-2"
+                  style={{ borderColor: TEAL, color: TEAL }}
+                >
+                  View vehicles
+                </a>
+              </div>
+
               {/* 3 Feature row */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 my-2 max-w-2xl">
+              <div className="grid grid-cols-3 lg:grid-cols-3 gap-2 lg:gap-5 my-4 max-w-2xl mx-auto lg:mx-0">
                 {[
                   { icon: Wallet, title: "No hidden fees", desc: "What you see is what you pay" },
                   { icon: Truck, title: "Free delivery", desc: "Airport, hotel, villa and anywhere in Bali" },
                   { icon: Clock, title: "24/7 support", desc: "Local team ready to help anytime" },
                 ].map(({ icon: Icon, title, desc }) => (
-                  <div key={title} className="flex items-start gap-2.5">
+                  <div key={title} className="flex flex-col items-center text-center lg:flex-row lg:items-start lg:text-left gap-1.5 lg:gap-2.5">
                     <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "#f0f5f5" }}>
                       <Icon className="w-4 h-4" style={{ color: TEAL }} />
                     </div>
                     <div className="leading-tight">
-                      <div className="font-semibold text-[#1a1a1a] text-sm">{title}</div>
-                      <div className="text-xs text-gray-400 mt-1 leading-relaxed">{desc}</div>
+                      <div className="font-semibold text-[#1a1a1a] text-[11px] lg:text-sm">{title}</div>
+                      <div className="hidden lg:block text-xs text-gray-400 mt-1 leading-relaxed">{desc}</div>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* Social proof */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center justify-center lg:justify-start gap-3 lg:gap-4 mt-5 lg:mt-0">
                 <div className="flex -space-x-2">
                   {[1, 2, 3].map((i) => (
                     <img
                       key={i}
                       src={`https://i.pravatar.cc/100?img=${i + 10}`}
                       alt="Customer"
-                      className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                      className="w-7 h-7 lg:w-8 lg:h-8 rounded-full border-2 border-white object-cover"
                     />
                   ))}
                 </div>
-                <div className="text-sm font-semibold text-[#1a1a1a]">10,000+ happy customers</div>
+                <div className="text-xs lg:text-sm font-semibold text-[#1a1a1a]">10,000+ happy customers</div>
                 <div className="hidden sm:flex items-center gap-1 ml-2">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-3.5 h-3.5 fill-[#22c55e] text-[#22c55e]" />
@@ -252,7 +268,7 @@ export default function V11() {
             {/* Right Image — bleeds to the viewport's right edge to match the design */}
             <div className="order-1 lg:order-2 relative w-full">
               <div
-                className="relative w-full h-[300px] sm:h-[380px] lg:h-[460px] xl:h-[500px]"
+                className="relative w-full h-[200px] sm:h-[300px] lg:h-[460px] xl:h-[500px]"
               >
                 <img
                   src="/images/hero.png"
@@ -403,7 +419,7 @@ export default function V11() {
                   <img
                     src={deal.img}
                     alt={deal.title}
-                    className="absolute bottom-2 -right-2 lg:-right-3 w-[55%] lg:w-[58%] h-auto object-contain pointer-events-none group-hover:scale-105 transition-transform duration-500"
+                    className="absolute bottom-2 -right-3 lg:-right-4 w-[68%] lg:w-[72%] h-auto object-contain pointer-events-none group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
               ))}
@@ -450,7 +466,7 @@ export default function V11() {
                     <span className="flex items-center gap-1"><Gauge className="w-3.5 h-3.5" /> {car.cc}</span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 items-center">
+                  <div className="grid grid-cols-[auto_1fr] gap-2 items-center">
                     <div>
                       <div className="text-3xl lg:text-[32px] font-bold leading-none text-[#1a1a1a]">${car.price}</div>
                       <div className="text-xs text-gray-400 mt-1 mb-3">/day</div>
@@ -458,7 +474,7 @@ export default function V11() {
                         View details
                       </button>
                     </div>
-                    <div className="relative h-20">
+                    <div className="relative h-32 lg:h-36 -mr-2">
                       <img src={car.img} alt={car.name} className="absolute inset-0 w-full h-full object-contain" />
                     </div>
                   </div>
@@ -693,9 +709,9 @@ export default function V11() {
         {/* ==================== 9. FOOTER ==================== */}
         <footer className="py-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-white border-t border-gray-100">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-6 pb-10 mb-6 border-b border-gray-100">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-[26.5fr_15fr_15fr_17fr_26.5fr] gap-8 lg:gap-6 pb-10 mb-6 border-b border-gray-100">
               {/* Brand */}
-              <div className="col-span-2 md:col-span-3 lg:col-span-2">
+              <div className="col-span-2 md:col-span-3 lg:col-span-1">
                 <div className="flex items-center gap-2.5 mb-4">
                   <div className="w-10 h-10 rounded-md flex items-center justify-center" style={{ backgroundColor: TEAL }}>
                     <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -703,7 +719,7 @@ export default function V11() {
                     </svg>
                   </div>
                   <div className="leading-tight">
-                    <div className="font-bold text-[15px]" style={{ color: TEAL }}>AUTO ULTIMATE</div>
+                    <div className="font-bold text-[15px]" style={{ color: TEAL }}>BALI TRANS</div>
                     <div className="text-[10px] tracking-[0.15em] uppercase text-gray-400 -mt-0.5">Bali Car Rental</div>
                   </div>
                 </div>
@@ -748,12 +764,12 @@ export default function V11() {
                 </div>
               ))}
 
-              <div>
+              <div className="min-w-0">
                 <h4 className="font-bold text-[11px] tracking-[0.2em] uppercase text-gray-700 mb-4">CONTACT</h4>
                 <ul className="space-y-3">
-                  <li className="flex items-center gap-2 text-sm text-gray-500"><Phone className="w-3.5 h-3.5" style={{ color: TEAL }} /> +62 812 3456 7890</li>
-                  <li className="flex items-center gap-2 text-sm text-gray-500"><Mail className="w-3.5 h-3.5" style={{ color: TEAL }} /> hello@autoultimatebali.com</li>
-                  <li className="flex items-start gap-2 text-sm text-gray-500"><MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: TEAL }} /> Ngurah Rai International Airport, Bali, Indonesia</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-500 whitespace-nowrap"><Phone className="w-3.5 h-3.5 shrink-0" style={{ color: TEAL }} /> +62 812 3456 7890</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-500 min-w-0"><Mail className="w-3.5 h-3.5 shrink-0" style={{ color: TEAL }} /> <span className="truncate">hello@balitrans.com</span></li>
+                  <li className="flex items-start gap-2 text-sm text-gray-500 leading-snug"><MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: TEAL }} /> Ngurah Rai Airport, Bali, Indonesia</li>
                 </ul>
               </div>
 
@@ -777,7 +793,7 @@ export default function V11() {
             </div>
 
             <p className="text-center text-xs text-gray-400">
-              © {new Date().getFullYear()} Auto Ultimate Bali Car Rental. All rights reserved.
+              © {new Date().getFullYear()} Bali Trans Car Rental. All rights reserved.
             </p>
           </div>
         </footer>
