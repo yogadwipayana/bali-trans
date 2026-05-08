@@ -111,3 +111,161 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* ============================================================
+   .btn-glass — convex glass wash hover
+
+   On hover, a translucent gradient overlay slides down from the
+   top of the button. The overlay combines:
+     - a top-anchored radial highlight (the "convex" sheen)
+     - a vertical gradient from light to slightly darker
+     - inset highlight + bottom shadow for a domed look
+
+   Implementation notes:
+     * `isolation: isolate` creates a fresh stacking context so
+       `z-index: -1` on ::before stays inside the button (sits
+       above the button's painted background but below the text/
+       icon content, which are in-flow descendants).
+     * The overlay starts translated up (-100%) and animates to 0.
+     * `pointer-events: none` so it never blocks clicks.
+     * Honors prefers-reduced-motion.
+   ============================================================ */
+.btn-glass {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    /* top sheen — the "convex" highlight */
+    radial-gradient(
+      ellipse 130% 65% at 50% 0%,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.12) 35%,
+      rgba(255, 255, 255, 0) 70%
+    ),
+    /* light → dark vertical wash */
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.06) 28%,
+      rgba(0, 0, 0, 0.05) 60%,
+      rgba(0, 0, 0, 0.22) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.18);
+  transform: translateY(-101%);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.btn-glass:hover::before,
+.btn-glass:focus-visible::before {
+  transform: translateY(0);
+}
+
+.btn-glass:active::before {
+  transition-duration: 0.15s;
+  /* tiny press-in cue */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-glass::before {
+    transition: opacity 0.2s ease;
+    transform: translateY(0);
+    opacity: 0;
+  }
+  .btn-glass:hover::before,
+  .btn-glass:focus-visible::before {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   .btn-glass-fill — convex glass FILL animation
+
+   For outlined / ghost buttons (transparent background, colored
+   border + text). On hover, an opaque colored fill (with the
+   same convex glass shading as .btn-glass) sweeps down from the
+   top, and the text fades from --btn-fill to --btn-on-fill.
+
+   Customize per-button with CSS vars:
+     --btn-fill     (default: #1d4046, the teal)
+     --btn-on-fill  (default: #ffffff)
+
+   Example:
+     <button className="btn-glass-fill" style={{ "--btn-fill": "#aa3bff" }}>
+       Buy
+     </button>
+   ============================================================ */
+.btn-glass-fill {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.btn-glass-fill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    /* convex top sheen */
+    radial-gradient(
+      ellipse 130% 65% at 50% 0%,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.08) 40%,
+      rgba(255, 255, 255, 0) 70%
+    ),
+    /* solid fill — sits underneath the gradient */
+    var(--btn-fill, #1d4046);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(-101%);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.btn-glass-fill:hover::before,
+.btn-glass-fill:focus-visible::before {
+  transform: translateY(0);
+}
+
+.btn-glass-fill:hover,
+.btn-glass-fill:focus-visible {
+  color: var(--btn-on-fill, #ffffff);
+}
+
+.btn-glass-fill:active::before {
+  transition-duration: 0.15s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-glass-fill {
+    transition: color 0.2s ease;
+  }
+  .btn-glass-fill::before {
+    transition: opacity 0.2s ease;
+    transform: translateY(0);
+    opacity: 0;
+  }
+  .btn-glass-fill:hover::before,
+  .btn-glass-fill:focus-visible::before {
+    opacity: 1;
+  }
+}
