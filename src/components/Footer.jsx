@@ -6,7 +6,10 @@ import {
   WhatsappIcon,
 } from "@/components/SocialIcons";
 
-const TEAL = "#1d4046";
+// Brand ink — switched from the old teal `#1d4046` to the same monochrome
+// black used by /dashboard-v2 and the redesigned home so the footer stays
+// in sync with the rest of the site.
+const TEAL = "#0f0f0f";
 
 // Shared site footer: 3 columns on desktop (brand / CONTACT / STAY UPDATED).
 // Collapses responsively on mobile.
@@ -101,7 +104,7 @@ export function Footer() {
             <input
               type="email"
               placeholder="Your email"
-              className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm outline-none focus:border-[#1d4046] mb-2"
+              className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm outline-none focus:border-[#0f0f0f] mb-2"
             />
             <button
               className="btn-glass w-full py-2.5 text-white text-sm font-semibold rounded-lg"

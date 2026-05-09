@@ -126,7 +126,7 @@ export function BookingSelect({ id, label, icon: Icon, value, onChange, options,
           {label}
         </label>
         <div
-          className="flex items-center gap-2 h-[46px] w-full px-3 rounded-lg border border-[#1d4046] bg-white transition-colors focus-within:border-[#1d4046]"
+          className="flex items-center gap-2 h-[46px] w-full px-3 rounded-lg border border-[#0f0f0f] bg-white transition-colors focus-within:border-[#0f0f0f]"
         >
           {Icon && <Icon className="w-4 h-4 text-gray-400 shrink-0" />}
           <input
@@ -170,7 +170,7 @@ export function BookingSelect({ id, label, icon: Icon, value, onChange, options,
           onClick={toggleMenu}
           onKeyDown={onKeyDown}
           className={`flex items-center gap-2 h-[46px] w-full px-3 bg-gray-50 rounded-lg border transition-colors text-left
-            ${open ? "border-[#1d4046] bg-white" : "border-gray-200 hover:border-gray-300"}`}
+            ${open ? "border-[#0f0f0f] bg-white" : "border-gray-200 hover:border-gray-300"}`}
         >
           {Icon && <Icon className="w-4 h-4 text-gray-400 shrink-0" />}
           <span className="flex-1 min-w-0 truncate text-sm text-gray-800">{value}</span>
@@ -201,11 +201,11 @@ export function BookingSelect({ id, label, icon: Icon, value, onChange, options,
                   onClick={() => select(idx)}
                   className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer
                     ${active ? "bg-gray-50" : ""}
-                    ${selected ? "text-[#1d4046] font-semibold" : isCustomEntry ? "text-[#1d4046] border-t border-gray-100 mt-1 pt-2" : "text-gray-700"}`}
+                    ${selected ? "text-[#0f0f0f] font-semibold" : isCustomEntry ? "text-[#0f0f0f] border-t border-gray-100 mt-1 pt-2" : "text-gray-700"}`}
                 >
                   {isCustomEntry && <Pencil className="w-3.5 h-3.5 shrink-0" />}
                   <span className="flex-1 truncate">{opt}</span>
-                  {selected && <Check className="w-4 h-4 text-[#1d4046] shrink-0" />}
+                  {selected && <Check className="w-4 h-4 text-[#0f0f0f] shrink-0" />}
                 </li>
               );
             })}

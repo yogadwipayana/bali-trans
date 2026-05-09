@@ -132,7 +132,7 @@ code {
 
    Customize per-button with CSS vars:
      --btn-fill          — liquid color           (default: #ffffff)
-     --btn-on-fill       — text color on hover    (default: #1d4046)
+     --btn-on-fill       — text color on hover    (default: #0f0f0f)
      --btn-hover-border  — outline on hover       (default: #000000)
 
    The hover-state outline is intentional: when the fill is
@@ -175,7 +175,7 @@ code {
 
 .btn-glass:hover,
 .btn-glass:focus-visible {
-  color: var(--btn-on-fill, #1d4046);
+  color: var(--btn-on-fill, #0f0f0f);
   outline-color: var(--btn-hover-border, #000000);
 }
 
@@ -208,7 +208,7 @@ code {
    the water rises.
 
    Customize per-button with CSS vars:
-     --btn-fill     (default: #1d4046)
+     --btn-fill     (default: #0f0f0f)
      --btn-on-fill  (default: #ffffff)
    ============================================================ */
 .btn-glass-fill {
@@ -225,7 +225,7 @@ code {
   z-index: -1;
   pointer-events: none;
   border-radius: inherit;
-  background: var(--btn-fill, #1d4046);
+  background: var(--btn-fill, #0f0f0f);
   transform: translateY(100%);
   transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;

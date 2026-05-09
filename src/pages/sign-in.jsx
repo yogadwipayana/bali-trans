@@ -2,22 +2,31 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import {
-  Mail,
-  Lock,
+  ArrowRight,
+  Car,
+  Check,
   Eye,
   EyeOff,
-  Check,
-  Car,
+  Lock,
+  Mail,
   MapPin,
-  ArrowRight,
 } from "lucide-react";
 
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { FacebookIcon } from "@/components/SocialIcons";
 import { useFullScreenRoot } from "@/hooks/useFullScreenRoot";
 
-const TEAL = "#1d4046";
+// ---------------------------------------------------------------------------
+// Sign in — restyled to share /dashboard-v2's monochrome system: black/white,
+// thin 1px borders instead of soft shadows, small 6–12px radii instead of
+// the previous rounded-3xl card. The two-column split, dashboard preview,
+// and every line of copy are preserved verbatim — only the chrome changes.
+// ---------------------------------------------------------------------------
+const INK = "#0f0f0f"; // primary action / brand text
+const TEXT = "#1a1a1a"; // body text
+const MUTED = "#7c7c7c"; // secondary text
+const BORDER = "#e6e6e6"; // panel borders
+const SOFT = "#f3f4f4"; // page surface
 
 // Brand-color "G" for the Google button. Inlined because lucide-react
 // doesn't ship brand marks and we don't want another asset for one icon.
@@ -54,6 +63,33 @@ function AppleIcon({ className }) {
   );
 }
 
+// Small uppercase strip used above the dashboard preview cards. Mirrors the
+// "RENTAL TYPE" / "BODY TYPE" small-cap labels on /dashboard-v2.
+function PreviewLabel({ children, trailing }) {
+  return (
+    <div className="mb-3 flex items-center justify-between">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/55">
+        {children}
+      </span>
+      {trailing}
+    </div>
+  );
+}
+
+// Square 6px-radius accent tile used inside the dashboard preview to anchor
+// each row. Same rhythm as the IconTile on the redesigned home page, just
+// painted in inverted (white-on-ink) tones.
+function PreviewTile({ children, size = 28 }) {
+  return (
+    <div
+      className="grid shrink-0 place-items-center rounded-[6px] border border-white/15 bg-white/[0.06] text-white/80"
+      style={{ width: size, height: size }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function SignIn() {
   useFullScreenRoot();
 
@@ -67,8 +103,8 @@ export default function SignIn() {
   const update = (key, value) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
     // Hook: replace with axios call to your auth endpoint.
     console.log("Sign in", form);
   };
@@ -84,356 +120,355 @@ export default function SignIn() {
       </Helmet>
 
       <div
-        className="min-h-screen font-sans text-[#1a1a1a] antialiased"
+        className="min-h-screen font-sans antialiased"
         style={{
-          // Warm cream replaces pure white so the page sits more comfortably
-          // next to the deep teal left panel — the harsh dark/bright boundary
-          // is the main reason the original layout felt "loud".
-          backgroundColor: "#f7f5f1",
-          "--text": "#6b7280",
-          "--text-h": "#1a1a1a",
-          "--bg": "#f7f5f1",
-          "--border": "#ece9e3",
+          backgroundColor: SOFT,
+          color: TEXT,
+          // Force light values for the global dark-mode CSS variables so
+          // text doesn't flip greys under prefers-color-scheme.
+          "--text": MUTED,
+          "--text-h": INK,
+          "--bg": SOFT,
+          "--border": BORDER,
           colorScheme: "light",
-          color: "#1a1a1a",
         }}
       >
-        {/* ==================== 1. HEADER / NAVBAR ==================== */}
-        <Header />
-
-        {/* ==================== 2. SIGN IN ====================
-            Visual treatment mirrors the CTA banner on the home page:
-            contained `max-w-7xl rounded-3xl overflow-hidden` card, with
-            cream page background framing it. Inside, the same two-column
-            split — teal dashboard preview on the left, white form on the
-            right — but now sharing one rounded container instead of
-            running edge-to-edge.
+        {/* ==================== SIGN IN ====================
+            Single max-w-7xl card with a thin 1px border replaces the
+            previous rounded-3xl shadow-elevated panel. Inside, the
+            two-column split is preserved — ink-black dashboard preview
+            on the left, white form on the right — so users still see
+            the product story even though the chrome is now monochrome.
         ==================== */}
-        <section className="pt-4 pb-10 lg:pt-8 lg:pb-14 px-4 sm:px-6 lg:px-8">
+        <section className="px-4 sm:px-6 lg:px-8 pt-6 pb-10 lg:pt-10 lg:pb-14">
           <div
-            className="max-w-7xl mx-auto rounded-3xl overflow-hidden relative"
-            style={{
-              backgroundColor: TEAL,
-              // Soft teal-tinted lift so the banner reads as a card sitting
-              // on the cream page rather than floating in space.
-              boxShadow: "0 12px 40px rgba(29, 64, 70, 0.15)",
-            }}
+            className="relative mx-auto max-w-7xl overflow-hidden rounded-[12px] border bg-white"
+            style={{ borderColor: BORDER }}
           >
             <div className="grid lg:grid-cols-2 min-h-[560px] lg:min-h-[680px]">
               {/* ---- Left: dashboard preview ----
-                  Concrete preview of what lives inside a Bali Trans account:
-                  upcoming trip, saved pickup spots, payment methods. Replaces
-                  the old marketing hero copy ("Drive Bali. Make it
-                  unforgettable.") with actual product features.
+                  Concrete preview of what lives inside a Bali Trans
+                  account: upcoming trip, saved pickup spots, payment
+                  methods. Background is the deep INK used by the
+                  dashboard's PRO-features chip and the home page's CTA
+                  banner so all three pages read in the same voice.
               ---- */}
-              <aside className="relative hidden lg:block overflow-hidden">
+              <aside
+                className="relative hidden overflow-hidden lg:block"
+                style={{ backgroundColor: INK }}
+              >
+                {/* Subtle textured underlay — the hero image, knocked back
+                    to ~12% so it reads as monochrome ambience instead of
+                    competing with the foreground content. */}
                 <img
                   src="/images/hero.png"
                   alt=""
                   aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover opacity-25"
                   loading="eager"
+                  className="absolute inset-0 h-full w-full object-cover opacity-[0.12] mix-blend-luminosity"
                 />
                 <div
                   className="absolute inset-0"
                   style={{
                     background:
-                      "linear-gradient(180deg, rgba(29,64,70,0.65) 0%, rgba(29,64,70,0.88) 100%)",
+                      "linear-gradient(180deg, rgba(15,15,15,0.65) 0%, rgba(15,15,15,0.95) 100%)",
                   }}
                 />
 
-              <div className="relative z-10 h-full flex flex-col justify-center p-10 xl:p-14 text-white max-w-xl">
-                <span className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-white/55 mb-4">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-300/80" />
-                  Your dashboard
-                </span>
-                <h2
-                  className="tracking-tight mb-3 text-white"
-                  style={{
-                    fontSize: "clamp(1.375rem, 0.875rem + 1.4vw, 1.875rem)",
-                    letterSpacing: "-0.018em",
-                    fontWeight: 600,
-                    color: "#ffffff",
-                    lineHeight: 1.2,
-                  }}
-                >
-                  Everything in one place
-                </h2>
-                <p className="text-[13px] text-white/65 mb-7 max-w-sm leading-relaxed">
-                  Trips, receipts, saved pickups, and payment methods — all on
-                  one account.
-                </p>
+                <div className="relative z-10 flex h-full max-w-xl flex-col justify-center p-10 xl:p-14 text-white">
+                  <span className="mb-4 inline-flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/55">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-300/80" />
+                    Your dashboard
+                  </span>
+                  <h2
+                    className="mb-3 tracking-tight text-white"
+                    style={{
+                      fontSize: "clamp(1.5rem, 0.875rem + 1.4vw, 2rem)",
+                      letterSpacing: "-0.02em",
+                      fontWeight: 700,
+                      lineHeight: 1.15,
+                    }}
+                  >
+                    Everything in one place
+                  </h2>
+                  <p className="mb-7 max-w-sm text-[13px] leading-relaxed text-white/65">
+                    Trips, receipts, saved pickups, and payment methods — all on
+                    one account.
+                  </p>
 
-                {/* Decorative — the real data lives behind auth. AT users get
-                    the product story from the heading + subhead above. */}
-                <div className="space-y-3" aria-hidden="true">
-                  {/* Upcoming trip */}
-                  <div className="rounded-xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/55">
-                        Upcoming trip
-                      </span>
-                      <span className="text-[10px] font-medium text-emerald-300 bg-emerald-300/15 px-2 py-0.5 rounded-full">
-                        Confirmed
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                        <Car className="w-5 h-5 text-white/85" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-white truncate">
-                          Toyota Avanza · Auto
-                        </div>
-                        <div className="text-[11px] text-white/55 mt-0.5">
-                          Sep 12 → Sep 15 · 3 days
-                        </div>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-white/40 shrink-0" />
-                    </div>
-                    <div className="mt-3 flex items-center gap-1.5 text-[11px] text-white/65">
-                      <MapPin className="w-3 h-3 shrink-0" />
-                      <span className="truncate">
-                        Ngurah Rai Airport → Ubud Villa
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Saved pickups */}
-                  <div className="rounded-xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/55">
-                        Saved pickups
-                      </span>
-                      <span className="text-[10px] text-white/45">3 places</span>
-                    </div>
-                    <div className="space-y-2">
-                      {[
-                        { label: "Home villa", sub: "Seminyak" },
-                        { label: "Ngurah Rai Airport", sub: "Terminal 2" },
-                      ].map((loc) => (
-                        <div key={loc.label} className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-md bg-white/[0.07] flex items-center justify-center shrink-0">
-                            <MapPin className="w-3.5 h-3.5 text-white/75" />
-                          </div>
-                          <div className="text-[12px] leading-tight">
-                            <div className="font-medium text-white/90">
-                              {loc.label}
-                            </div>
-                            <div className="text-white/45 text-[10.5px] mt-0.5">
-                              {loc.sub}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Payment methods */}
-                  <div className="rounded-xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/55">
-                        Payment methods
-                      </span>
-                      <span className="text-[10px] text-white/45">2 saved</span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2.5">
-                        <div
-                          className="w-9 h-6 rounded flex items-center justify-center shrink-0"
-                          style={{
-                            background:
-                              "linear-gradient(135deg, #1a56db 0%, #1e3a8a 100%)",
-                          }}
-                        >
-                          <span className="text-[8px] font-bold italic text-white tracking-tight">
-                            VISA
+                  {/* Decorative product preview cards. AT users get the
+                      product story from the heading + subhead above. */}
+                  <div className="space-y-3" aria-hidden="true">
+                    {/* Upcoming trip */}
+                    <div className="rounded-[8px] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-md">
+                      <PreviewLabel
+                        trailing={
+                          <span className="rounded-[4px] bg-emerald-300/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                            Confirmed
                           </span>
+                        }
+                      >
+                        Upcoming trip
+                      </PreviewLabel>
+                      <div className="flex items-center gap-3">
+                        <PreviewTile size={36}>
+                          <Car className="h-[18px] w-[18px]" strokeWidth={1.7} />
+                        </PreviewTile>
+                        <div className="min-w-0 flex-1 leading-tight">
+                          <div className="truncate text-[13px] font-semibold text-white">
+                            Toyota Avanza · Auto
+                          </div>
+                          <div className="mt-0.5 text-[11px] text-white/55">
+                            Sep 12 → Sep 15 · 3 days
+                          </div>
                         </div>
-                        <div className="flex-1 text-[12px] text-white/85">
-                          •••• 4242
-                        </div>
-                        <div className="text-[10px] text-white/45 font-medium">
-                          Default
-                        </div>
+                        <ArrowRight className="h-4 w-4 shrink-0 text-white/40" />
                       </div>
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-6 rounded bg-black flex items-center justify-center shrink-0">
-                          <AppleIcon className="w-3 h-3 text-white" />
+                      <div className="mt-3 flex items-center gap-1.5 text-[11px] text-white/65">
+                        <MapPin className="h-3 w-3 shrink-0" />
+                        <span className="truncate">
+                          Ngurah Rai Airport → Ubud Villa
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Saved pickups */}
+                    <div className="rounded-[8px] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-md">
+                      <PreviewLabel
+                        trailing={
+                          <span className="text-[10px] text-white/45">3 places</span>
+                        }
+                      >
+                        Saved pickups
+                      </PreviewLabel>
+                      <div className="space-y-2">
+                        {[
+                          { label: "Home villa", sub: "Seminyak" },
+                          { label: "Ngurah Rai Airport", sub: "Terminal 2" },
+                        ].map((loc) => (
+                          <div key={loc.label} className="flex items-center gap-2.5">
+                            <PreviewTile>
+                              <MapPin className="h-3 w-3" strokeWidth={1.8} />
+                            </PreviewTile>
+                            <div className="text-[12px] leading-tight">
+                              <div className="font-medium text-white/90">
+                                {loc.label}
+                              </div>
+                              <div className="mt-0.5 text-[10.5px] text-white/45">
+                                {loc.sub}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Payment methods */}
+                    <div className="rounded-[8px] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-md">
+                      <PreviewLabel
+                        trailing={
+                          <span className="text-[10px] text-white/45">2 saved</span>
+                        }
+                      >
+                        Payment methods
+                      </PreviewLabel>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className="grid h-6 w-9 shrink-0 place-items-center rounded-[4px]"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #1a56db 0%, #1e3a8a 100%)",
+                            }}
+                          >
+                            <span className="text-[8px] font-bold italic tracking-tight text-white">
+                              VISA
+                            </span>
+                          </div>
+                          <div className="flex-1 text-[12px] text-white/85">
+                            •••• 4242
+                          </div>
+                          <div className="text-[10px] font-medium text-white/45">
+                            Default
+                          </div>
                         </div>
-                        <div className="flex-1 text-[12px] text-white/85">
-                          Apple Pay
+                        <div className="flex items-center gap-2.5">
+                          <div className="grid h-6 w-9 shrink-0 place-items-center rounded-[4px] bg-black">
+                            <AppleIcon className="h-3 w-3 text-white" />
+                          </div>
+                          <div className="flex-1 text-[12px] text-white/85">
+                            Apple Pay
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </aside>
+              </aside>
 
-              {/* ---- Right: form (lives directly on white inside the
-                   rounded banner — no nested card; the banner IS the card) ---- */}
-              <div className="bg-white flex items-center justify-center px-6 sm:px-10 lg:px-14 py-10 lg:py-14">
+              {/* ---- Right: form ---- */}
+              <div className="flex items-center justify-center bg-white px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
                 <div className="w-full max-w-md">
                   {/* Heading */}
+                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.18em]" style={{ color: MUTED }}>
+                    Member access
+                  </span>
                   <h1
-                    className="tracking-tight mb-2"
+                    className="mt-2 mb-2 tracking-tight"
                     style={{
-                      // #0a0a0a → #1a1a1a: same family, less shouty.
-                      color: "#1a1a1a",
-                      margin: "0 0 0.5rem 0",
-                      fontSize: "clamp(1.375rem, 0.875rem + 1vw, 1.875rem)",
-                      letterSpacing: "-0.018em",
-                      fontWeight: 600,
+                      color: INK,
+                      margin: "0.5rem 0 0.5rem 0",
+                      fontSize: "clamp(1.5rem, 0.875rem + 1vw, 2rem)",
+                      letterSpacing: "-0.02em",
+                      fontWeight: 700,
+                      lineHeight: 1.15,
                     }}
                   >
                     Welcome back
                   </h1>
-                  <p className="text-sm text-gray-500 leading-relaxed mb-6">
+                  <p className="mb-6 text-[13px] leading-relaxed" style={{ color: MUTED }}>
                     Sign in to access your trips, saved pickup locations, and
                     payment methods.
                   </p>
 
-                  <form onSubmit={handleSubmit} className="space-y-5">
+                  <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Email */}
                     <div>
                       <label
                         htmlFor="si-email"
-                        className="block text-sm font-semibold text-[#1a1a1a] mb-1.5"
+                        className="mb-1.5 block text-[12px] font-semibold"
+                        style={{ color: INK }}
                       >
                         Email address
                       </label>
                       <div className="relative">
-                        <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                         <input
                           id="si-email"
                           type="email"
                           autoComplete="email"
                           required
                           value={form.email}
-                          onChange={(e) => update("email", e.target.value)}
+                          onChange={(event) => update("email", event.target.value)}
                           placeholder="Enter your email"
-                          className="w-full h-11 pl-10 pr-3 bg-white border border-gray-200 rounded-lg text-sm text-[#1a1a1a] placeholder:text-gray-400 outline-none transition-colors focus:border-[#1d4046] focus:ring-2 focus:ring-[#1d4046]/10"
+                          className="h-[44px] w-full rounded-[6px] border bg-white pl-10 pr-3 text-[13px] outline-none transition-colors placeholder:text-gray-400 focus:border-[#0f0f0f]"
+                          style={{ borderColor: BORDER, color: TEXT }}
                         />
                       </div>
                     </div>
 
                     {/* Password */}
                     <div>
-                      <div className="flex items-center justify-between mb-1.5">
+                      <div className="mb-1.5 flex items-center justify-between">
                         <label
                           htmlFor="si-password"
-                          className="block text-sm font-semibold text-[#1a1a1a]"
+                          className="block text-[12px] font-semibold"
+                          style={{ color: INK }}
                         >
                           Password
                         </label>
                         <a
                           href="#forgot"
-                          className="text-xs font-semibold transition-colors hover:underline"
-                          style={{ color: TEAL }}
+                          className="text-[11.5px] font-semibold transition-opacity hover:opacity-70"
+                          style={{ color: INK }}
                         >
                           Forgot password?
                         </a>
                       </div>
                       <div className="relative">
-                        <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                         <input
                           id="si-password"
                           type={showPassword ? "text" : "password"}
                           autoComplete="current-password"
                           required
                           value={form.password}
-                          onChange={(e) => update("password", e.target.value)}
+                          onChange={(event) => update("password", event.target.value)}
                           placeholder="Enter your password"
-                          className="w-full h-11 pl-10 pr-10 bg-white border border-gray-200 rounded-lg text-sm text-[#1a1a1a] placeholder:text-gray-400 outline-none transition-colors focus:border-[#1d4046] focus:ring-2 focus:ring-[#1d4046]/10"
+                          className="h-[44px] w-full rounded-[6px] border bg-white pl-10 pr-10 text-[13px] outline-none transition-colors placeholder:text-gray-400 focus:border-[#0f0f0f]"
+                          style={{ borderColor: BORDER, color: TEXT }}
                         />
                         <button
                           type="button"
-                          onClick={() => setShowPassword((v) => !v)}
+                          onClick={() => setShowPassword((value) => !value)}
                           aria-label={showPassword ? "Hide password" : "Show password"}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md text-gray-400 hover:text-[#1d4046] transition-colors"
+                          className="absolute right-2 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-[4px] text-gray-400 transition-colors hover:bg-[#f5f5f5] hover:text-[#0f0f0f]"
                         >
                           {showPassword ? (
-                            <EyeOff className="w-4 h-4" />
+                            <EyeOff className="h-4 w-4" />
                           ) : (
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4" />
                           )}
                         </button>
                       </div>
                     </div>
 
-                    {/* Remember me */}
-                    <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                    {/* Remember me — flat square checkbox matching the
+                        dashboard's filter checkboxes. */}
+                    <label className="inline-flex cursor-pointer select-none items-center gap-2">
                       <span className="relative inline-flex">
                         <input
                           type="checkbox"
                           checked={form.remember}
-                          onChange={(e) => update("remember", e.target.checked)}
+                          onChange={(event) => update("remember", event.target.checked)}
                           className="peer sr-only"
                         />
                         <span
-                          className="w-4 h-4 rounded border border-gray-300 bg-white flex items-center justify-center transition-colors peer-checked:bg-[#1d4046] peer-checked:border-[#1d4046] peer-focus-visible:ring-2 peer-focus-visible:ring-[#1d4046]/30"
+                          className="grid h-[14px] w-[14px] place-items-center rounded-[3px] border bg-white transition-colors peer-checked:border-[#0f0f0f] peer-checked:bg-[#0f0f0f]"
+                          style={{ borderColor: "#d6d6d6" }}
                         >
                           {form.remember && (
-                            <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                            <Check className="h-[10px] w-[10px] text-white" strokeWidth={3.5} />
                           )}
                         </span>
                       </span>
-                      <span className="text-sm text-gray-600">Remember me</span>
+                      <span className="text-[12.5px]" style={{ color: TEXT }}>
+                        Remember me
+                      </span>
                     </label>
 
                     {/* Submit */}
                     <button
                       type="submit"
-                      className="btn-glass w-full h-11 text-white text-sm font-bold rounded-lg"
-                      style={{ backgroundColor: TEAL }}
+                      className="inline-flex h-[44px] w-full items-center justify-center gap-2 rounded-[6px] text-[12.5px] font-bold tracking-[0.01em] text-white transition-colors hover:bg-[#1f1f1f]"
+                      style={{ backgroundColor: INK }}
                     >
-                      Sign in
+                      Sign in <ArrowRight className="h-4 w-4" />
                     </button>
                   </form>
 
                   {/* Divider */}
-                  <div className="flex items-center gap-3 my-5">
-                    <div className="h-px flex-1 bg-gray-200" />
-                    <span className="text-xs text-gray-400">or continue with</span>
-                    <div className="h-px flex-1 bg-gray-200" />
+                  <div className="my-5 flex items-center gap-3">
+                    <div className="h-px flex-1" style={{ backgroundColor: BORDER }} />
+                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.12em]" style={{ color: "#a4a4a4" }}>
+                      or continue with
+                    </span>
+                    <div className="h-px flex-1" style={{ backgroundColor: BORDER }} />
                   </div>
 
-                  {/* Social providers */}
-                  <div className="space-y-2.5">
-                    <button
-                      type="button"
-                      className="btn-glass-fill w-full h-11 flex items-center justify-center gap-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-[#1a1a1a]"
-                      style={{ "--btn-fill": "#f8f9fa", "--btn-on-fill": "#1a1a1a" }}
-                    >
-                      <GoogleIcon className="w-4 h-4" />
+                  {/* Social providers — all reduced to thin-bordered white
+                      tiles, matching the dashboard's minimal pill treatment. */}
+                  <div className="space-y-2">
+                    <SocialButton icon={<GoogleIcon className="h-4 w-4" />}>
                       Continue with Google
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-glass-fill w-full h-11 flex items-center justify-center gap-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-[#1a1a1a]"
-                      style={{ "--btn-fill": "#f8f9fa", "--btn-on-fill": "#1a1a1a" }}
+                    </SocialButton>
+                    <SocialButton
+                      icon={<FacebookIcon className="h-4 w-4 text-[#1877F2]" />}
                     >
-                      <FacebookIcon className="w-4 h-4 text-[#1877F2]" />
                       Continue with Facebook
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-glass-fill w-full h-11 flex items-center justify-center gap-2.5 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-[#1a1a1a]"
-                      style={{ "--btn-fill": "#f8f9fa", "--btn-on-fill": "#1a1a1a" }}
-                    >
-                      <AppleIcon className="w-4 h-4 text-black" />
+                    </SocialButton>
+                    <SocialButton icon={<AppleIcon className="h-4 w-4 text-black" />}>
                       Continue with Apple
-                    </button>
+                    </SocialButton>
                   </div>
 
                   {/* Footer link */}
-                  <p className="text-center text-sm text-gray-500 mt-6">
+                  <p className="mt-6 text-center text-[12.5px]" style={{ color: MUTED }}>
                     Don&apos;t have an account?{" "}
                     <Link
                       to="/sign-up"
-                      className="font-semibold transition-colors hover:underline"
-                      style={{ color: TEAL }}
+                      className="font-semibold transition-opacity hover:opacity-70"
+                      style={{ color: INK }}
                     >
                       Sign up
                     </Link>
@@ -444,14 +479,23 @@ export default function SignIn() {
           </div>
         </section>
 
-        {/* ==================== 3. FOOTER ====================
-            The marketing trust strip ("No hidden fees", "10,000+ happy
-            customers") was removed in this redesign — the page now leans
-            on the dashboard preview to communicate value through actual
-            product features instead of promotional claims.
-        ==================== */}
         <Footer />
       </div>
     </>
+  );
+}
+
+// Outlined social provider button. Square edges, thin border, hover fills
+// to a pale grey — matches the dashboard's outlined-pill treatment.
+function SocialButton({ icon, children }) {
+  return (
+    <button
+      type="button"
+      className="flex h-[44px] w-full items-center justify-center gap-2.5 rounded-[6px] border bg-white text-[12.5px] font-semibold transition-colors hover:bg-[#f5f5f5]"
+      style={{ borderColor: BORDER, color: INK }}
+    >
+      {icon}
+      {children}
+    </button>
   );
 }

@@ -19,26 +19,53 @@ import {
   Users,
 } from "lucide-react";
 
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BookingDateTime } from "@/components/BookingDateTime";
 import { BookingSelect } from "@/components/BookingSelect";
 import { useFullScreenRoot } from "@/hooks/useFullScreenRoot";
 
-const TEAL = "#1d4046";
+// ---------------------------------------------------------------------------
+// Vehicles browse — restyled to share /dashboard-v2's monochrome system:
+// black/white/grey, thin 1px borders instead of soft shadows, small 4–10px
+// radii, and ink-pill CTAs in place of the previous teal treatment. The
+// search form, filter dropdowns, chip row, results header, view toggle,
+// pagination, trust strip, CTA banner, and every vehicle's data are
+// preserved verbatim — only the chrome changes.
+//
+// Note: this page used to render its own local `VehiclesHistoryHeader`
+// alongside the global `<Header />` from App.jsx (visible double-stacked
+// nav). The local header is dropped here so the global ink-themed header
+// is the single source of nav.
+// ---------------------------------------------------------------------------
+const INK = "#0f0f0f"; // primary action / brand text
+const TEXT = "#1a1a1a"; // body text
+const MUTED = "#7c7c7c"; // secondary text
+const FAINT = "#a4a4a4"; // ultra-muted (uppercase labels, captions)
+const BORDER = "#e6e6e6"; // panel borders
+const SOFT = "#f3f4f4"; // page surface
+const HEART = "#ff3a5e"; // saved hearts
 
-const PICKUP_LOCATIONS = [
-  "Ngurah Rai Airport (DPS)",
-];
+const PICKUP_LOCATIONS = ["Ngurah Rai Airport (DPS)"];
 
 // Secondary filter dropdowns. Each list starts with an "All …" entry so the
 // control reads cleanly when no filter is applied.
 const VEHICLE_TYPE_OPTIONS = ["All types", "SUV", "MPV", "Hatchback", "Sedan"];
-const PRICE_RANGE_OPTIONS = ["All prices", "Under $30", "$30 – $50", "$50 – $80", "Above $80"];
+const PRICE_RANGE_OPTIONS = [
+  "All prices",
+  "Under $30",
+  "$30 – $50",
+  "$50 – $80",
+  "Above $80",
+];
 const TRANSMISSION_OPTIONS = ["All transmissions", "Automatic", "Manual"];
 const SEATS_OPTIONS = ["All seats", "4 seats", "5 seats", "7 seats"];
 const FUEL_OPTIONS = ["All fuel types", "Petrol", "Diesel", "Hybrid", "Electric"];
-const SORT_OPTIONS = ["Popularity", "Price (low to high)", "Price (high to low)", "Newest"];
+const SORT_OPTIONS = [
+  "Popularity",
+  "Price (low to high)",
+  "Price (high to low)",
+  "Newest",
+];
 
 // Single-select chip filter. "All vehicles" is the default active state.
 const FILTER_CHIPS = [
@@ -52,9 +79,9 @@ const FILTER_CHIPS = [
   "Premium",
 ];
 
-// Source of truth for the vehicle grid. `discountTone` drives the accent color
-// on the discount pill. Every card renders both "View details" and "Book now"
-// CTAs.
+// Source of truth for the vehicle grid. `discount` flags promotional
+// pricing; the redesign renders all discount tones with the same ink-on-
+// white treatment so the page reads in one voice.
 const VEHICLES = [
   {
     id: "toyota-avanza",
@@ -67,7 +94,6 @@ const VEHICLES = [
     price: 32,
     oldPrice: 38,
     discount: "15% OFF",
-    discountTone: "green",
   },
   {
     id: "toyota-rush",
@@ -80,7 +106,6 @@ const VEHICLES = [
     price: 45,
     oldPrice: 50,
     discount: "10% OFF",
-    discountTone: "orange",
   },
   {
     id: "honda-hrv",
@@ -164,7 +189,6 @@ const VEHICLES = [
     price: 85,
     oldPrice: 95,
     discount: "10% OFF",
-    discountTone: "orange",
   },
   {
     id: "toyota-yaris",
@@ -187,7 +211,6 @@ const VEHICLES = [
     price: 33,
     oldPrice: 38,
     discount: "13% OFF",
-    discountTone: "orange",
   },
   {
     id: "suzuki-ertiga",
@@ -230,7 +253,6 @@ const VEHICLES = [
     price: 44,
     oldPrice: 49,
     discount: "10% OFF",
-    discountTone: "orange",
   },
   {
     id: "toyota-calya",
@@ -253,7 +275,6 @@ const VEHICLES = [
     price: 60,
     oldPrice: 70,
     discount: "14% OFF",
-    discountTone: "green",
   },
   {
     id: "mazda-cx5",
@@ -296,7 +317,6 @@ const VEHICLES = [
     price: 20,
     oldPrice: 24,
     discount: "16% OFF",
-    discountTone: "green",
   },
   {
     id: "nissan-xtrail",
@@ -325,40 +345,82 @@ const VEHICLES = [
 // (sm) which still reads naturally.
 const PAGE_SIZE = 8;
 
+// ---------------------------------------------------------------------------
+// Small presentational helpers — same rhythm as the redesigned home and
+// auth pages so every dashboard-v2-themed page shares its building blocks.
+// ---------------------------------------------------------------------------
+
+// Section heading — bold, tight tracking, fluid clamp().
+function SectionHeading({ children, as: Tag = "h2" }) {
+  return (
+    <Tag
+      className="font-bold tracking-tight"
+      style={{
+        color: INK,
+        margin: 0,
+        fontSize: "clamp(1.5rem, 1rem + 1vw, 1.875rem)",
+        letterSpacing: "-0.02em",
+        lineHeight: 1.15,
+        fontWeight: 700,
+      }}
+    >
+      {children}
+    </Tag>
+  );
+}
+
+// 36×36 thin-bordered icon container — used by the trust strip.
+function IconTile({ icon: Icon, size = 36 }) {
+  return (
+    <div
+      className="grid shrink-0 place-items-center rounded-[8px] border"
+      style={{ width: size, height: size, borderColor: BORDER, color: INK }}
+    >
+      <Icon className="h-[16px] w-[16px]" strokeWidth={1.8} />
+    </div>
+  );
+}
+
 // Small presentational pill used next to the car name (e.g. "MPV", "SUV").
 function TypeBadge({ children }) {
   return (
-    <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold tracking-wide rounded-md bg-gray-100 text-gray-600 uppercase">
+    <span
+      className="inline-flex items-center rounded-[4px] border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em]"
+      style={{ borderColor: BORDER, color: MUTED }}
+    >
       {children}
     </span>
   );
 }
 
-// Discount pill positioned at the top-left corner of each car image.
-// The color hierarchy matches the mockup: green for the deeper discount (15%),
-// orange for 10%.
-function DiscountBadge({ label, tone }) {
-  const styles =
-    tone === "green"
-      ? "bg-[#e6f5ea] text-[#2f855a]"
-      : "bg-[#fff1e0] text-[#b75c11]";
+// Discount pill positioned at the top-left corner of each card. Solid ink
+// matches the dashboard's PRO-features chip and the special-offer cards
+// on the redesigned home page.
+function DiscountBadge({ label }) {
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-md ${styles}`}
+      className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[10px] font-bold tracking-[0.04em] text-white"
+      style={{ backgroundColor: INK }}
     >
       {label}
     </span>
   );
 }
 
+// Vehicle card. Mirrors the dashboard-v2 vehicle card rhythm: meta strip on
+// top with type badge + heart toggle, transparent PNG centred, name +
+// specs, price + dual CTAs.
 function VehicleCard({ car, favorited, onToggleFavorite }) {
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-4 lg:p-5 flex flex-col hover:shadow-[0_8px_32px_rgba(0,0,0,0.06)] transition-shadow">
-      {/* Header row: discount badge (if any) + favorite heart */}
-      <div className="flex items-start justify-between mb-2">
+    <article
+      className="flex flex-col rounded-[8px] border bg-white p-4 lg:p-5 transition-colors"
+      style={{ borderColor: BORDER }}
+    >
+      {/* Top row — discount on left, heart on right. */}
+      <div className="mb-2 flex items-start justify-between gap-2">
         <div>
           {car.discount ? (
-            <DiscountBadge label={car.discount} tone={car.discountTone} />
+            <DiscountBadge label={car.discount} />
           ) : (
             <span className="block h-[18px]" aria-hidden />
           )}
@@ -366,80 +428,103 @@ function VehicleCard({ car, favorited, onToggleFavorite }) {
         <button
           type="button"
           aria-label={
-            favorited ? `Remove ${car.name} from favorites` : `Save ${car.name} to favorites`
+            favorited
+              ? `Remove ${car.name} from favorites`
+              : `Save ${car.name} to favorites`
           }
           aria-pressed={favorited}
           onClick={() => onToggleFavorite(car.id)}
-          className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-[#1d4046] hover:bg-gray-50 transition-colors"
+          className="grid h-7 w-7 place-items-center rounded-full transition-colors hover:bg-[#f5f5f5]"
+          style={{ color: INK }}
         >
           <Heart
-            className={`w-4 h-4 ${favorited ? "fill-[#1d4046] text-[#1d4046]" : ""}`}
+            className="h-[16px] w-[16px]"
+            strokeWidth={1.8}
+            style={favorited ? { color: HEART, fill: HEART } : undefined}
           />
         </button>
       </div>
 
-      {/* Car image */}
-      <div className="relative h-28 sm:h-32 lg:h-36 -mx-2 mb-3">
+      {/* Car cutout */}
+      <div className="relative -mx-2 mb-3 h-28 sm:h-32 lg:h-36">
         <img
           src="/images/mercy.png"
           alt={car.name}
-          className="absolute inset-0 w-full h-full object-contain"
           loading="lazy"
+          className="absolute inset-0 h-full w-full object-contain"
         />
       </div>
 
       {/* Name + type chip */}
-      <div className="flex items-center gap-2 mb-2">
-        <h3 className="font-bold text-[#1a1a1a] text-base">{car.name}</h3>
+      <div className="mb-2 flex items-center gap-2">
+        <h3
+          className="text-[15px] font-semibold leading-tight"
+          style={{ color: INK }}
+        >
+          {car.name}
+        </h3>
         <TypeBadge>{car.type}</TypeBadge>
       </div>
 
       {/* Specs row */}
-      <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mb-3 text-xs text-gray-500">
-        <span className="flex items-center gap-1">
-          <Users className="w-3.5 h-3.5" /> {car.seats} Seats
+      <div
+        className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]"
+        style={{ color: MUTED }}
+      >
+        <span className="inline-flex items-center gap-1">
+          <Users className="h-3 w-3" /> {car.seats} Seats
         </span>
-        <span className="flex items-center gap-1">
-          <Cog className="w-3.5 h-3.5" /> {car.trans}
+        <span className="inline-flex items-center gap-1">
+          <Cog className="h-3 w-3" /> {car.trans}
         </span>
-        <span className="flex items-center gap-1">
-          <Gauge className="w-3.5 h-3.5" /> {car.engine}
+        <span className="inline-flex items-center gap-1">
+          <Gauge className="h-3 w-3" /> {car.engine}
         </span>
-        <span className="flex items-center gap-1">
-          <Briefcase className="w-3.5 h-3.5" /> {car.bags} {car.bags === 1 ? "Bag" : "Bags"}
+        <span className="inline-flex items-center gap-1">
+          <Briefcase className="h-3 w-3" /> {car.bags}{" "}
+          {car.bags === 1 ? "Bag" : "Bags"}
         </span>
       </div>
 
       {/* Price */}
-      <div className="flex items-baseline gap-2 mb-4">
-        <span className="text-2xl font-bold text-[#1a1a1a] leading-none">
+      <div className="mb-4 flex items-baseline gap-2">
+        <span
+          className="text-[22px] font-bold leading-none"
+          style={{ color: INK }}
+        >
           ${car.price}
         </span>
-        <span className="text-xs text-gray-500">/day</span>
+        <span className="text-[11px]" style={{ color: MUTED }}>
+          / day
+        </span>
         {car.oldPrice && (
-          <span className="text-xs text-gray-400 line-through ml-auto">
+          <span
+            className="ml-auto text-[11px] line-through"
+            style={{ color: FAINT }}
+          >
             ${car.oldPrice}
           </span>
         )}
       </div>
 
-      {/* CTA row */}
+      {/* CTAs — outlined "View details" + solid ink "Book now". */}
       <div className="mt-auto grid grid-cols-2 gap-2">
         <button
           type="button"
-          className="btn-glass-fill h-9 text-xs font-semibold rounded-md border-2 border-[#1d4046] text-[#1d4046]"
+          className="inline-flex h-[36px] items-center justify-center rounded-[6px] border text-[11.5px] font-semibold transition-colors hover:bg-[#f5f5f5]"
+          style={{ borderColor: INK, color: INK }}
         >
           View details
         </button>
         <button
           type="button"
-          className="btn-glass h-9 text-xs font-semibold rounded-md text-white"
-          style={{ backgroundColor: TEAL }}
+          className="inline-flex h-[36px] items-center justify-center rounded-[6px] text-[11.5px] font-bold text-white transition-colors hover:bg-[#1f1f1f]"
+          style={{ backgroundColor: INK }}
         >
           Book now
         </button>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -450,29 +535,30 @@ function VehicleCard({ car, favorited, onToggleFavorite }) {
 function buildPageList(current, total) {
   if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
   const wanted = new Set([1, total, current - 1, current, current + 1]);
-  const pages = [...wanted].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+  const pages = [...wanted]
+    .filter((page) => page >= 1 && page <= total)
+    .sort((a, b) => a - b);
   const out = [];
-  pages.forEach((p, i) => {
-    if (i > 0 && p - pages[i - 1] > 1) out.push("…");
-    out.push(p);
+  pages.forEach((page, index) => {
+    if (index > 0 && page - pages[index - 1] > 1) out.push("…");
+    out.push(page);
   });
   return out;
 }
 
-// Pagination control under the results grid. Renders a Prev / numbered / Next
-// row with disabled boundaries and a teal active-page pill. Numbers are real
-// buttons; the "…" tokens render as inert spans.
+// Pagination control under the results grid. Renders Prev / numbered / Next
+// row with disabled boundaries and an ink active-page pill.
 function Pagination({ currentPage, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
   const pages = buildPageList(currentPage, totalPages);
 
   const navBtn =
-    "h-9 w-9 inline-flex items-center justify-center rounded-md border border-gray-200 bg-white text-gray-600 transition-colors hover:border-[#1d4046] hover:text-[#1d4046] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:text-gray-600";
+    "inline-flex h-9 w-9 items-center justify-center rounded-[6px] border bg-white transition-colors hover:bg-[#f5f5f5] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white";
 
   return (
     <nav
       aria-label="Pagination"
-      className="flex items-center justify-center gap-2 mt-8"
+      className="mt-8 flex items-center justify-center gap-2"
     >
       <button
         type="button"
@@ -480,33 +566,41 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         disabled={currentPage === 1}
         aria-label="Previous page"
         className={navBtn}
+        style={{ borderColor: BORDER, color: INK }}
       >
-        <ChevronLeft className="w-4 h-4" />
+        <ChevronLeft className="h-4 w-4" />
       </button>
 
       <ul className="flex items-center gap-1">
-        {pages.map((p, i) =>
-          p === "…" ? (
-            <li key={`gap-${i}`} className="px-1 text-sm text-gray-400 select-none">
+        {pages.map((page, index) =>
+          page === "…" ? (
+            <li
+              key={`gap-${index}`}
+              className="select-none px-1 text-[12px]"
+              style={{ color: FAINT }}
+            >
               …
             </li>
           ) : (
-            <li key={p}>
+            <li key={page}>
               <button
                 type="button"
-                aria-current={p === currentPage ? "page" : undefined}
-                aria-label={`Page ${p}`}
-                onClick={() => onPageChange(p)}
-                className={`h-9 min-w-9 px-3 inline-flex items-center justify-center rounded-md text-sm font-semibold transition-colors ${
-                  p === currentPage
-                    ? "bg-[#1d4046] text-white border border-[#1d4046]"
-                    : "bg-white text-gray-700 border border-gray-200 hover:border-[#1d4046] hover:text-[#1d4046]"
+                aria-current={page === currentPage ? "page" : undefined}
+                aria-label={`Page ${page}`}
+                onClick={() => onPageChange(page)}
+                className={`inline-flex h-9 min-w-9 items-center justify-center rounded-[6px] border px-3 text-[12.5px] font-semibold transition-colors ${
+                  page === currentPage ? "" : "hover:bg-[#f5f5f5]"
                 }`}
+                style={
+                  page === currentPage
+                    ? { backgroundColor: INK, borderColor: INK, color: "#ffffff" }
+                    : { borderColor: BORDER, color: TEXT }
+                }
               >
-                {p}
+                {page}
               </button>
             </li>
-          )
+          ),
         )}
       </ul>
 
@@ -516,8 +610,9 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         disabled={currentPage === totalPages}
         aria-label="Next page"
         className={navBtn}
+        style={{ borderColor: BORDER, color: INK }}
       >
-        <ChevronRight className="w-4 h-4" />
+        <ChevronRight className="h-4 w-4" />
       </button>
     </nav>
   );
@@ -531,16 +626,21 @@ function ViewToggleButton({ active, onClick, ariaLabel, children }) {
       aria-label={ariaLabel}
       aria-pressed={active}
       onClick={onClick}
-      className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${
+      className="inline-flex h-8 w-8 items-center justify-center rounded-[6px] transition-colors"
+      style={
         active
-          ? "bg-white text-[#1d4046] shadow-sm border border-gray-200"
-          : "text-gray-400 hover:text-gray-600"
-      }`}
+          ? { backgroundColor: "#ffffff", border: `1px solid ${BORDER}`, color: INK }
+          : { color: FAINT }
+      }
     >
       {children}
     </button>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
 
 export default function Vehicles() {
   const [booking, setBooking] = useState({
@@ -560,7 +660,7 @@ export default function Vehicles() {
   const pageEndIndex = Math.min(pageStartIndex + PAGE_SIZE, VEHICLES.length);
   const visibleVehicles = useMemo(
     () => VEHICLES.slice(pageStartIndex, pageEndIndex),
-    [pageStartIndex, pageEndIndex]
+    [pageStartIndex, pageEndIndex],
   );
   const gridSectionRef = useRef(null);
 
@@ -598,11 +698,14 @@ export default function Vehicles() {
   const handlePageChange = (next) => {
     if (next < 1 || next > totalPages || next === currentPage) return;
     setCurrentPage(next);
-    gridSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    gridSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = (event) => {
+    event.preventDefault();
     setCurrentPage(1);
     console.log("Search vehicles", { booking, filters, activeChip });
   };
@@ -620,70 +723,33 @@ export default function Vehicles() {
       </Helmet>
 
       <div
-        className="min-h-screen bg-white font-sans text-[#1a1a1a] antialiased"
+        className="min-h-screen font-sans antialiased"
         style={{
-          // Override the dark-mode CSS variables from index.css — see home.jsx.
-          "--text": "#6b7280",
-          "--text-h": "#1a1a1a",
-          "--bg": "#ffffff",
-          "--border": "#e5e7eb",
+          backgroundColor: SOFT,
+          color: TEXT,
+          // Force light values for the global dark-mode CSS variables.
+          "--text": MUTED,
+          "--text-h": INK,
+          "--bg": SOFT,
+          "--border": BORDER,
           colorScheme: "light",
-          color: "#1a1a1a",
         }}
       >
-        <Header activeNav="Vehicles" />
-
-        {/* ==================== 1. HERO ==================== */}
-        <section className="relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 lg:pt-12 pb-6 lg:pb-10">
-            <div className="grid lg:grid-cols-[1.1fr_1.4fr] gap-6 lg:gap-10 items-center">
-              <div className="order-2 lg:order-1">
-                <h1
-                  className="font-bold leading-[1.05] tracking-[-0.02em] mb-3 lg:mb-5"
-                  style={{
-                    color: "#0a0a0a",
-                    margin: "0 0 1rem 0",
-                    fontSize: "clamp(2rem, 1.25rem + 2vw, 3rem)",
-                    letterSpacing: "-0.02em",
-                    fontWeight: 700,
-                  }}
-                >
-                  Choose your perfect<br className="hidden lg:inline" /> vehicle in Bali
-                </h1>
-                <p className="text-gray-500 text-sm lg:text-base leading-relaxed max-w-lg">
-                  Browse our wide range of reliable cars for self-drive or with-driver
-                  rentals. Quality vehicles, transparent prices, and friendly service.
-                </p>
-              </div>
-
-              <div className="order-1 lg:order-2 relative w-full">
-                <div className="relative w-full h-[200px] sm:h-[280px] lg:h-[360px]">
-                  <img
-                    src="/images/hero.png"
-                    alt="Modern SUVs on a Bali beach with palm trees"
-                    className="absolute inset-0 w-full h-full object-contain"
-                    loading="eager"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ==================== 2. SEARCH + FILTERS ==================== */}
-        <section className="px-4 sm:px-6 lg:px-8 pb-8 lg:pb-10">
+        {/* ==================== 1. SEARCH + FILTERS ==================== */}
+        <section className="px-4 pb-8 pt-8 sm:px-6 lg:px-8 lg:pb-10 lg:pt-10">
           <form
             onSubmit={handleSubmit}
-            className="max-w-7xl mx-auto bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.06)] border border-gray-100 p-5 lg:p-6 space-y-5"
+            className="mx-auto max-w-7xl space-y-5 rounded-[10px] border bg-white p-5 lg:p-6"
+            style={{ borderColor: BORDER }}
           >
             {/* Top row: pickup + dates + search */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[repeat(3,minmax(0,1fr))_auto] gap-4 lg:gap-3 items-end">
+            <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-[repeat(3,minmax(0,1fr))_auto] lg:gap-3">
               <BookingSelect
                 id="v-pickup"
                 label="Pickup location"
                 icon={MapPin}
                 value={booking.pickup}
-                onChange={(v) => updateBooking("pickup", v)}
+                onChange={(value) => updateBooking("pickup", value)}
                 options={PICKUP_LOCATIONS}
                 allowCustom
               />
@@ -692,7 +758,7 @@ export default function Vehicles() {
                 label="Pick-up date & time"
                 icon={Calendar}
                 value={booking.pickupAt}
-                onChange={(v) => updateBooking("pickupAt", v)}
+                onChange={(value) => updateBooking("pickupAt", value)}
               />
               <BookingDateTime
                 id="v-return-at"
@@ -700,65 +766,66 @@ export default function Vehicles() {
                 icon={Calendar}
                 value={booking.returnAt}
                 min={booking.pickupAt}
-                onChange={(v) => updateBooking("returnAt", v)}
+                onChange={(value) => updateBooking("returnAt", value)}
               />
               <button
                 type="submit"
-                className="btn-glass inline-flex items-center justify-center gap-2 h-[46px] px-5 text-white text-sm font-bold rounded-lg w-full lg:w-auto sm:col-span-2 lg:col-span-1"
-                style={{ backgroundColor: TEAL }}
+                className="inline-flex h-[46px] w-full items-center justify-center gap-2 rounded-[6px] px-5 text-[12.5px] font-bold tracking-[0.01em] text-white transition-colors hover:bg-[#1f1f1f] sm:col-span-2 lg:w-auto lg:col-span-1"
+                style={{ backgroundColor: INK }}
               >
-                Search vehicles <ArrowRight className="w-4 h-4" />
+                Search vehicles <ArrowRight className="h-4 w-4" />
               </button>
             </div>
 
             {/* Middle row: 6 filter dropdowns */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               <BookingSelect
                 id="v-type"
                 label="Vehicle type"
                 icon={Car}
                 value={filters.vehicleType}
-                onChange={(v) => updateFilter("vehicleType", v)}
+                onChange={(value) => updateFilter("vehicleType", value)}
                 options={VEHICLE_TYPE_OPTIONS}
               />
               <BookingSelect
                 id="v-price"
                 label="Price range"
                 value={filters.price}
-                onChange={(v) => updateFilter("price", v)}
+                onChange={(value) => updateFilter("price", value)}
                 options={PRICE_RANGE_OPTIONS}
               />
               <BookingSelect
                 id="v-trans"
                 label="Transmission"
                 value={filters.transmission}
-                onChange={(v) => updateFilter("transmission", v)}
+                onChange={(value) => updateFilter("transmission", value)}
                 options={TRANSMISSION_OPTIONS}
               />
               <BookingSelect
                 id="v-seats"
                 label="Seats"
                 value={filters.seats}
-                onChange={(v) => updateFilter("seats", v)}
+                onChange={(value) => updateFilter("seats", value)}
                 options={SEATS_OPTIONS}
               />
               <BookingSelect
                 id="v-fuel"
                 label="Fuel type"
                 value={filters.fuel}
-                onChange={(v) => updateFilter("fuel", v)}
+                onChange={(value) => updateFilter("fuel", value)}
                 options={FUEL_OPTIONS}
               />
               <BookingSelect
                 id="v-sort"
                 label="Sort by"
                 value={filters.sort}
-                onChange={(v) => updateFilter("sort", v)}
+                onChange={(value) => updateFilter("sort", value)}
                 options={SORT_OPTIONS}
               />
             </div>
 
-            {/* Bottom row: quick-filter chips */}
+            {/* Bottom row: quick-filter chips. Active = solid ink, idle =
+                outlined to match the dashboard's filter pills. */}
             <div className="flex flex-wrap gap-2">
               {FILTER_CHIPS.map((chip) => {
                 const active = chip === activeChip;
@@ -768,11 +835,20 @@ export default function Vehicles() {
                     type="button"
                     onClick={() => setActiveChip(chip)}
                     aria-pressed={active}
-                    className={`px-4 py-2 text-xs font-semibold rounded-full border transition-colors ${
+                    className="rounded-[20px] border px-4 py-1.5 text-[11.5px] font-semibold transition-colors"
+                    style={
                       active
-                        ? "bg-[#1d4046] text-white border-[#1d4046]"
-                        : "bg-white text-gray-700 border-gray-200 hover:border-[#1d4046] hover:text-[#1d4046]"
-                    }`}
+                        ? {
+                            backgroundColor: INK,
+                            borderColor: INK,
+                            color: "#ffffff",
+                          }
+                        : {
+                            backgroundColor: "#ffffff",
+                            borderColor: BORDER,
+                            color: TEXT,
+                          }
+                    }
                   >
                     {chip}
                   </button>
@@ -791,22 +867,30 @@ export default function Vehicles() {
           `}</style>
         </section>
 
-        {/* ==================== 3. RESULTS HEADER ==================== */}
-        <section ref={gridSectionRef} className="px-4 sm:px-6 lg:px-8 scroll-mt-20">
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 mb-5">
-            <div className="font-bold text-[#1a1a1a] text-base lg:text-lg">
+        {/* ==================== 2. RESULTS HEADER ==================== */}
+        <section
+          ref={gridSectionRef}
+          className="scroll-mt-20 px-4 sm:px-6 lg:px-8"
+        >
+          <div className="mx-auto mb-5 flex max-w-7xl items-center justify-between gap-4">
+            <div className="text-[14px] font-bold lg:text-[15px]" style={{ color: INK }}>
               Showing{" "}
-              <span className="text-[#1d4046]">
+              <span style={{ color: INK }}>
                 {pageStartIndex + 1}–{pageEndIndex}
               </span>{" "}
               of {VEHICLES.length} vehicles
             </div>
             <div className="flex items-center gap-3">
-              <div className="hidden sm:flex items-center gap-2 text-xs">
-                <span className="text-gray-500">Sort by:</span>
-                <span className="font-semibold text-[#1a1a1a]">{filters.sort}</span>
+              <div className="hidden items-center gap-2 text-[11.5px] sm:flex">
+                <span style={{ color: MUTED }}>Sort by:</span>
+                <span className="font-semibold" style={{ color: INK }}>
+                  {filters.sort}
+                </span>
               </div>
-              <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-lg p-1">
+              <div
+                className="flex items-center gap-1 rounded-[8px] border p-1"
+                style={{ borderColor: BORDER, backgroundColor: SOFT }}
+              >
                 <ViewToggleButton
                   active={view === "grid"}
                   onClick={() => setView("grid")}
@@ -826,14 +910,14 @@ export default function Vehicles() {
           </div>
         </section>
 
-        {/* ==================== 4. VEHICLE GRID ==================== */}
-        <section className="px-4 sm:px-6 lg:px-8 pb-10 lg:pb-12">
-          <div className="max-w-7xl mx-auto">
+        {/* ==================== 3. VEHICLE GRID ==================== */}
+        <section className="px-4 pb-10 sm:px-6 lg:px-8 lg:pb-12">
+          <div className="mx-auto max-w-7xl">
             <div
               className={
                 view === "grid"
-                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5"
-                  : "grid grid-cols-1 gap-4"
+                  ? "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4 xl:grid-cols-4"
+                  : "grid grid-cols-1 gap-3"
               }
             >
               {visibleVehicles.map((car) => (
@@ -854,9 +938,12 @@ export default function Vehicles() {
           </div>
         </section>
 
-        {/* ==================== 5. TRUST STRIP ==================== */}
-        <section className="px-4 sm:px-6 lg:px-8 pb-10 lg:pb-12">
-          <div className="max-w-7xl mx-auto bg-white border border-gray-100 rounded-2xl p-5 lg:p-6 grid grid-cols-2 lg:grid-cols-4 gap-y-5">
+        {/* ==================== 4. TRUST STRIP ==================== */}
+        <section className="px-4 pb-10 sm:px-6 lg:px-8 lg:pb-12">
+          <div
+            className="mx-auto grid max-w-7xl grid-cols-2 gap-y-5 rounded-[8px] border bg-white p-5 lg:grid-cols-4 lg:p-6"
+            style={{ borderColor: BORDER }}
+          >
             {[
               {
                 icon: CheckCircle,
@@ -882,61 +969,59 @@ export default function Vehicles() {
               <div
                 key={title}
                 className={`flex items-start gap-3 px-4 lg:px-6 ${
-                  idx > 0 ? "lg:border-l lg:border-gray-100" : ""
+                  idx > 0 ? "lg:border-l" : ""
                 }`}
+                style={idx > 0 ? { borderColor: BORDER } : undefined}
               >
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: "#f0f5f5" }}
-                >
-                  <Icon className="w-4 h-4" style={{ color: TEAL }} />
-                </div>
+                <IconTile icon={Icon} />
                 <div>
-                  <div className="font-semibold text-sm text-[#1a1a1a]">{title}</div>
-                  <div className="text-xs text-gray-400 mt-0.5">{desc}</div>
+                  <div className="text-[13px] font-semibold" style={{ color: INK }}>
+                    {title}
+                  </div>
+                  <div
+                    className="mt-0.5 text-[11.5px]"
+                    style={{ color: MUTED }}
+                  >
+                    {desc}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ==================== 6. CTA BANNER ==================== */}
-        <section className="px-4 sm:px-6 lg:px-8 pb-10 lg:pb-12">
+        {/* ==================== 5. CTA BANNER ==================== */}
+        <section className="px-4 pb-10 sm:px-6 lg:px-8 lg:pb-12">
           <div
-            className="max-w-7xl mx-auto rounded-3xl overflow-hidden relative"
-            style={{ backgroundColor: TEAL }}
+            className="relative mx-auto max-w-7xl overflow-hidden rounded-[12px]"
+            style={{ backgroundColor: INK }}
           >
             <div className="grid lg:grid-cols-[1.1fr_1fr]">
-              <div className="p-8 lg:p-10 z-10 relative">
-                <h2
-                  className="font-bold leading-tight"
-                  style={{
-                    color: "#ffffff",
-                    margin: "0 0 0.75rem 0",
-                    fontSize: "clamp(1.5rem, 1rem + 1.25vw, 2rem)",
-                    letterSpacing: "-0.01em",
-                    fontWeight: 700,
-                  }}
-                >
-                  Need help choosing a car?
-                </h2>
-                <p className="text-white/80 text-sm lg:text-base mb-6 max-w-md">
-                  Our team is ready to help you find the perfect vehicle for your Bali
-                  adventure.
+              <div className="relative z-10 p-8 lg:p-10">
+                <div className="mb-3 inline-flex items-center gap-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/60">
+                  <Clock className="h-3 w-3" />
+                  Always available
+                </div>
+                <SectionHeading>
+                  <span className="text-white">Need help choosing a car?</span>
+                </SectionHeading>
+                <p className="mb-6 mt-3 max-w-md text-[14px] text-white/75">
+                  Our team is ready to help you find the perfect vehicle for
+                  your Bali adventure.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <a
                     href="#contact"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-[#1d4046] font-bold rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                    className="inline-flex h-[44px] items-center justify-center gap-2 rounded-[6px] bg-white px-5 text-[12.5px] font-bold transition-colors hover:bg-white/90"
+                    style={{ color: INK }}
                   >
-                    <Phone className="w-4 h-4" /> Contact us
+                    <Phone className="h-4 w-4" /> Contact us
                   </a>
                   <Link
                     to="/#book"
-                    className="btn-glass inline-flex items-center gap-2 px-5 py-2.5 font-semibold rounded-lg text-sm text-white border border-white/40"
-                    style={{ backgroundColor: TEAL }}
+                    className="inline-flex h-[44px] items-center justify-center gap-2 rounded-[6px] border border-white/40 px-5 text-[12.5px] font-semibold text-white transition-colors hover:bg-white/10"
                   >
-                    Book now <ArrowRight className="w-4 h-4" />
+                    Book now <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
               </div>
@@ -945,12 +1030,12 @@ export default function Vehicles() {
                 <img
                   src="https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=900&q=80"
                   alt="Bali sunset with beach gazebo"
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: `linear-gradient(to right, ${TEAL} 0%, ${TEAL}cc 15%, transparent 55%)`,
+                    background: `linear-gradient(to right, ${INK} 0%, ${INK}cc 25%, transparent 65%)`,
                   }}
                 />
               </div>
@@ -964,9 +1049,9 @@ export default function Vehicles() {
   );
 }
 
-// Inline SVG icons for the Grid/List view toggle. lucide-react v1.14 doesn't
-// ship LayoutGrid / List consistently, so we draw them here to stay
-// self-contained.
+// Inline SVG icons for the Grid/List view toggle. lucide-react doesn't
+// always ship LayoutGrid / List consistently, so we draw them here to
+// stay self-contained.
 function GridIcon() {
   return (
     <svg

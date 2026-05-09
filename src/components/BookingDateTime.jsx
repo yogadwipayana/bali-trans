@@ -105,7 +105,7 @@ export function BookingDateTime({ id, label, icon: Icon, value, onChange, min })
           aria-expanded={open}
           onClick={toggleMenu}
           className={`flex items-center gap-2 h-[46px] w-full px-3 bg-gray-50 rounded-lg border transition-colors text-left
-            ${open ? "border-[#1d4046] bg-white" : "border-gray-200 hover:border-gray-300"}`}
+            ${open ? "border-[#0f0f0f] bg-white" : "border-gray-200 hover:border-gray-300"}`}
         >
           <Icon className="w-4 h-4 text-gray-400 shrink-0" />
           <span className="flex-1 min-w-0 truncate text-sm text-gray-800">
@@ -163,8 +163,8 @@ export function BookingDateTime({ id, label, icon: Icon, value, onChange, min })
                 const disabled = isDisabled(d);
                 let cls =
                   "h-8 rounded-md text-sm transition-colors flex items-center justify-center";
-                if (selected) cls += " bg-[#1d4046] text-white font-semibold";
-                else if (isToday) cls += " border border-[#1d4046] text-[#1d4046] font-semibold";
+                if (selected) cls += " bg-[#0f0f0f] text-white font-semibold";
+                else if (isToday) cls += " border border-[#0f0f0f] text-[#0f0f0f] font-semibold";
                 else if (disabled) cls += " text-gray-300 cursor-not-allowed";
                 else cls += " text-gray-700 hover:bg-gray-100";
                 return (
@@ -194,7 +194,7 @@ export function BookingDateTime({ id, label, icon: Icon, value, onChange, min })
                   aria-label="Hours"
                   value={pad2(current.getHours())}
                   onChange={(e) => setHour(Number(e.target.value))}
-                  className="bali-time w-12 h-8 text-center text-sm font-semibold text-gray-800 bg-gray-50 rounded-md border border-gray-200 focus:border-[#1d4046] focus:bg-white focus:outline-none"
+                  className="bali-time w-12 h-8 text-center text-sm font-semibold text-gray-800 bg-gray-50 rounded-md border border-gray-200 focus:border-[#0f0f0f] focus:bg-white focus:outline-none"
                 />
                 <span className="text-gray-400 font-bold">:</span>
                 <input
@@ -205,7 +205,7 @@ export function BookingDateTime({ id, label, icon: Icon, value, onChange, min })
                   aria-label="Minutes"
                   value={pad2(current.getMinutes())}
                   onChange={(e) => setMinute(Number(e.target.value))}
-                  className="bali-time w-12 h-8 text-center text-sm font-semibold text-gray-800 bg-gray-50 rounded-md border border-gray-200 focus:border-[#1d4046] focus:bg-white focus:outline-none"
+                  className="bali-time w-12 h-8 text-center text-sm font-semibold text-gray-800 bg-gray-50 rounded-md border border-gray-200 focus:border-[#0f0f0f] focus:bg-white focus:outline-none"
                 />
               </div>
             </div>
@@ -215,7 +215,7 @@ export function BookingDateTime({ id, label, icon: Icon, value, onChange, min })
                 type="button"
                 onClick={() => setOpen(false)}
                 className="btn-glass px-3 py-1.5 text-xs font-bold text-white rounded-md"
-                style={{ backgroundColor: "#1d4046" }}
+                style={{ backgroundColor: "#0f0f0f" }}
               >
                 Done
               </button>
