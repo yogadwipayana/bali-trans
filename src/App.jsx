@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router"
 import Home from "./pages/home"
-import V1 from "./pages/v1"
 import Vehicles from "./pages/vehicles"
 import SignIn from "./pages/sign-in"
 import SignUp from "./pages/sign-up"
@@ -13,7 +12,6 @@ export default function App() {
     <>
       <Routes>
         <Route path="/" element={<Home/>} />
-        <Route path="/v1" element={<V1/>} />
         <Route path="/vehicles" element={<Vehicles/>} />
         <Route path="/sign-in" element={<SignIn/>} />
         <Route path="/sign-up" element={<SignUp/>} />

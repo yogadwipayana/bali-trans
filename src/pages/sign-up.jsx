@@ -9,12 +9,9 @@ import {
   Eye,
   EyeOff,
   Check,
-  Shield,
-  Truck,
-  Headphones,
-  Wallet,
-  Clock,
-  Users,
+  Car,
+  MapPin,
+  ArrowRight,
 } from "lucide-react";
 
 import { Header } from "@/components/Header";
@@ -108,14 +105,15 @@ export default function SignUp() {
       </Helmet>
 
       <div
-        className="min-h-screen bg-white font-sans text-[#1a1a1a] antialiased"
+        className="min-h-screen font-sans text-[#1a1a1a] antialiased"
         style={{
-          // Same light-mode override the sign-in / home pages use so the
-          // global prefers-color-scheme dark variables don't bleed in.
+          // Warm cream replaces pure white so the page sits more comfortably
+          // next to the deep teal left panel — matches the sign-in palette.
+          backgroundColor: "#f7f5f1",
           "--text": "#6b7280",
           "--text-h": "#1a1a1a",
-          "--bg": "#ffffff",
-          "--border": "#e5e7eb",
+          "--bg": "#f7f5f1",
+          "--border": "#ece9e3",
           colorScheme: "light",
           color: "#1a1a1a",
         }}
@@ -123,109 +121,190 @@ export default function SignUp() {
         {/* ==================== 1. HEADER / NAVBAR ==================== */}
         <Header />
 
-        {/* ==================== 2. SIGN UP ==================== */}
-        <section className="relative bg-white">
-          <div className="grid lg:grid-cols-2 min-h-[640px] lg:min-h-[760px]">
-            {/* ---- Left: Bali hero panel (mirrors sign-in, different copy) ---- */}
-            <aside className="relative hidden lg:block overflow-hidden">
-              <img
-                src="/images/hero.png"
-                alt="White SUV at Bali temple gates with ocean and palm trees at sunset"
-                className="absolute inset-0 w-full h-full object-cover"
-                loading="eager"
-              />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(29,64,70,0.10) 0%, rgba(29,64,70,0.55) 60%, rgba(29,64,70,0.85) 100%)",
-                }}
-              />
-              <div
-                className="absolute inset-y-0 right-0 w-32"
-                style={{
-                  background:
-                    "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%)",
-                }}
-              />
+        {/* ==================== 2. SIGN UP ====================
+            Mirrors the CTA banner pattern from the home page: contained
+            `max-w-7xl rounded-3xl overflow-hidden` card sitting on the cream
+            page background. Same two-column split as sign-in (teal dashboard
+            preview / white form) but framed by one rounded container.
+        ==================== */}
+        <section className="pt-4 pb-10 lg:pt-8 lg:pb-14 px-4 sm:px-6 lg:px-8">
+          <div
+            className="max-w-7xl mx-auto rounded-3xl overflow-hidden relative"
+            style={{
+              backgroundColor: TEAL,
+              boxShadow: "0 12px 40px rgba(29, 64, 70, 0.15)",
+            }}
+          >
+            <div className="grid lg:grid-cols-2 min-h-[560px] lg:min-h-[680px]">
+              {/* ---- Left: dashboard preview ----
+                  Concrete preview of what's inside an account: upcoming trip,
+                  saved pickups, payment methods. Replaces the old marketing
+                  hero copy ("Start your journey. Bali is waiting.") with
+                  product features.
+              ---- */}
+              <aside className="relative hidden lg:block overflow-hidden">
+                <img
+                  src="/images/hero.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover opacity-25"
+                  loading="eager"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, rgba(29,64,70,0.65) 0%, rgba(29,64,70,0.88) 100%)",
+                  }}
+                />
 
-              <div className="relative z-10 h-full flex flex-col justify-end p-10 xl:p-14 text-white max-w-xl">
+              <div className="relative z-10 h-full flex flex-col justify-center p-10 xl:p-14 text-white max-w-xl">
+                <span className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-white/55 mb-4">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-300/80" />
+                  What you'll get
+                </span>
                 <h2
-                  className="font-bold tracking-tight mb-2 text-white"
+                  className="tracking-tight mb-3 text-white"
                   style={{
-                    fontSize: "clamp(1.75rem, 1rem + 2vw, 2.5rem)",
-                    letterSpacing: "-0.02em",
-                    fontWeight: 700,
+                    fontSize: "clamp(1.375rem, 0.875rem + 1.4vw, 1.875rem)",
+                    letterSpacing: "-0.018em",
+                    fontWeight: 600,
                     color: "#ffffff",
+                    lineHeight: 1.2,
                   }}
                 >
-                  Start your journey.
+                  Built for repeat travel
                 </h2>
-                <p
-                  className="font-bold tracking-tight mb-7 text-white"
-                  style={{
-                    fontSize: "clamp(1.25rem, 0.75rem + 1.25vw, 1.75rem)",
-                    letterSpacing: "-0.02em",
-                    fontWeight: 700,
-                    color: "#ffffff",
-                  }}
-                >
-                  Bali is waiting.
+                <p className="text-[13px] text-white/65 mb-7 max-w-sm leading-relaxed">
+                  Save trips, pickup spots, and payment methods so your next
+                  booking takes seconds.
                 </p>
 
-                <ul className="space-y-4">
-                  {[
-                    {
-                      icon: Shield,
-                      title: "Best Price Guarantee",
-                      desc: "We offer the best rates with no hidden fees.",
-                    },
-                    {
-                      icon: Truck,
-                      title: "Free Delivery",
-                      desc: "Airport, hotel, villa, or anywhere in Bali.",
-                    },
-                    {
-                      icon: Headphones,
-                      title: "24/7 Support",
-                      desc: "We're here whenever you need us.",
-                    },
-                  ].map(({ icon: Icon, title, desc }) => (
-                    <li key={title} className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-white/15 backdrop-blur-sm">
-                        <Icon className="w-4 h-4 text-white" />
+                <div className="space-y-3" aria-hidden="true">
+                  {/* Upcoming trip */}
+                  <div className="rounded-xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/55">
+                        Upcoming trip
+                      </span>
+                      <span className="text-[10px] font-medium text-emerald-300 bg-emerald-300/15 px-2 py-0.5 rounded-full">
+                        Confirmed
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                        <Car className="w-5 h-5 text-white/85" />
                       </div>
-                      <div className="leading-snug">
-                        <div className="font-semibold text-sm text-white">{title}</div>
-                        <div className="text-xs text-white/75 mt-0.5 max-w-[18rem]">
-                          {desc}
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-white truncate">
+                          Toyota Avanza · Auto
+                        </div>
+                        <div className="text-[11px] text-white/55 mt-0.5">
+                          Sep 12 → Sep 15 · 3 days
                         </div>
                       </div>
-                    </li>
-                  ))}
-                </ul>
+                      <ArrowRight className="w-4 h-4 text-white/40 shrink-0" />
+                    </div>
+                    <div className="mt-3 flex items-center gap-1.5 text-[11px] text-white/65">
+                      <MapPin className="w-3 h-3 shrink-0" />
+                      <span className="truncate">
+                        Ngurah Rai Airport → Ubud Villa
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Saved pickups */}
+                  <div className="rounded-xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/55">
+                        Saved pickups
+                      </span>
+                      <span className="text-[10px] text-white/45">3 places</span>
+                    </div>
+                    <div className="space-y-2">
+                      {[
+                        { label: "Home villa", sub: "Seminyak" },
+                        { label: "Ngurah Rai Airport", sub: "Terminal 2" },
+                      ].map((loc) => (
+                        <div key={loc.label} className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-md bg-white/[0.07] flex items-center justify-center shrink-0">
+                            <MapPin className="w-3.5 h-3.5 text-white/75" />
+                          </div>
+                          <div className="text-[12px] leading-tight">
+                            <div className="font-medium text-white/90">
+                              {loc.label}
+                            </div>
+                            <div className="text-white/45 text-[10.5px] mt-0.5">
+                              {loc.sub}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Payment methods */}
+                  <div className="rounded-xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/55">
+                        Payment methods
+                      </span>
+                      <span className="text-[10px] text-white/45">2 saved</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className="w-9 h-6 rounded flex items-center justify-center shrink-0"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, #1a56db 0%, #1e3a8a 100%)",
+                          }}
+                        >
+                          <span className="text-[8px] font-bold italic text-white tracking-tight">
+                            VISA
+                          </span>
+                        </div>
+                        <div className="flex-1 text-[12px] text-white/85">
+                          •••• 4242
+                        </div>
+                        <div className="text-[10px] text-white/45 font-medium">
+                          Default
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-6 rounded bg-black flex items-center justify-center shrink-0">
+                          <AppleIcon className="w-3 h-3 text-white" />
+                        </div>
+                        <div className="flex-1 text-[12px] text-white/85">
+                          Apple Pay
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </aside>
 
-            {/* ---- Right: form ---- */}
-            <div className="flex items-center justify-center px-4 sm:px-6 lg:px-10 py-10 lg:py-14">
-              <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_8px_32px_rgba(0,0,0,0.06)] p-6 sm:p-8 lg:p-10">
+              {/* ---- Right: form (lives directly on white inside the
+                   rounded banner — no nested card) ---- */}
+              <div className="bg-white flex items-center justify-center px-6 sm:px-10 lg:px-14 py-10 lg:py-14">
+                <div className="w-full max-w-md">
                   {/* Heading */}
                   <h1
-                    className="font-bold tracking-tight mb-2"
+                    className="tracking-tight mb-2"
                     style={{
-                      color: "#0a0a0a",
+                      color: "#1a1a1a",
                       margin: "0 0 0.5rem 0",
-                      fontSize: "clamp(1.5rem, 1rem + 1vw, 2rem)",
-                      letterSpacing: "-0.02em",
-                      fontWeight: 700,
+                      fontSize: "clamp(1.375rem, 0.875rem + 1vw, 1.875rem)",
+                      letterSpacing: "-0.018em",
+                      fontWeight: 600,
                     }}
                   >
                     Create your account
                   </h1>
                   <p className="text-sm text-gray-500 leading-relaxed mb-6">
-                    Join Bali Trans and unlock premium rides across the island.
+                    Save trips, pickup locations, and payment methods to book
+                    your next ride faster.
                   </p>
 
                   <form onSubmit={handleSubmit} className="space-y-5">
@@ -461,37 +540,12 @@ export default function SignUp() {
           </div>
         </section>
 
-        {/* ==================== 3. TRUST STRIP ==================== */}
-        <section className="px-4 sm:px-6 lg:px-8 pb-12">
-          <div className="max-w-7xl mx-auto bg-white border border-gray-100 rounded-2xl p-5 lg:p-6 grid grid-cols-2 lg:grid-cols-4 gap-y-5">
-            {[
-              { icon: Wallet, title: "No hidden fees", desc: "What you see is what you pay" },
-              { icon: Truck, title: "Free delivery", desc: "Airport, hotel, villa and anywhere in Bali" },
-              { icon: Clock, title: "24/7 support", desc: "Local team ready to help anytime" },
-              { icon: Users, title: "10,000+ happy customers", desc: "Trusted by travelers from around the world" },
-            ].map(({ icon: Icon, title, desc }, idx) => (
-              <div
-                key={title}
-                className={`flex items-start gap-3 px-4 lg:px-6 ${
-                  idx > 0 ? "lg:border-l lg:border-gray-100" : ""
-                }`}
-              >
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: "#f0f5f5" }}
-                >
-                  <Icon className="w-4 h-4" style={{ color: TEAL }} />
-                </div>
-                <div>
-                  <div className="font-semibold text-sm text-[#1a1a1a]">{title}</div>
-                  <div className="text-xs text-gray-400 mt-0.5">{desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ==================== 4. FOOTER ==================== */}
+        {/* ==================== 3. FOOTER ====================
+            The marketing trust strip ("No hidden fees", "10,000+ happy
+            customers") was removed in this redesign — the page now leans
+            on the dashboard preview to communicate value through actual
+            product features instead of promotional claims.
+        ==================== */}
         <Footer />
       </div>
     </>

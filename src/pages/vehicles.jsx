@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import {
@@ -7,6 +7,8 @@ import {
   Calendar,
   Car,
   CheckCircle,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Cog,
   Gauge,
@@ -27,10 +29,6 @@ const TEAL = "#1d4046";
 
 const PICKUP_LOCATIONS = [
   "Ngurah Rai Airport (DPS)",
-  "Ubud",
-  "Seminyak",
-  "Kuta",
-  "Nusa Dua",
 ];
 
 // Secondary filter dropdowns. Each list starts with an "All …" entry so the
@@ -55,8 +53,8 @@ const FILTER_CHIPS = [
 ];
 
 // Source of truth for the vehicle grid. `discountTone` drives the accent color
-// on the discount pill; `showBookNow` controls whether the filled Book-now CTA
-// appears next to View details (the mockup only shows both buttons on row 1).
+// on the discount pill. Every card renders both "View details" and "Book now"
+// CTAs.
 const VEHICLES = [
   {
     id: "toyota-avanza",
@@ -70,7 +68,6 @@ const VEHICLES = [
     oldPrice: 38,
     discount: "15% OFF",
     discountTone: "green",
-    showBookNow: true,
   },
   {
     id: "toyota-rush",
@@ -84,7 +81,6 @@ const VEHICLES = [
     oldPrice: 50,
     discount: "10% OFF",
     discountTone: "orange",
-    showBookNow: true,
   },
   {
     id: "honda-hrv",
@@ -95,7 +91,6 @@ const VEHICLES = [
     engine: "1.8L",
     bags: 2,
     price: 55,
-    showBookNow: true,
   },
   {
     id: "toyota-innova",
@@ -158,7 +153,177 @@ const VEHICLES = [
     bags: 2,
     price: 50,
   },
+  {
+    id: "toyota-fortuner",
+    name: "Toyota Fortuner",
+    type: "SUV",
+    seats: 7,
+    trans: "Automatic",
+    engine: "2.7L",
+    bags: 3,
+    price: 85,
+    oldPrice: 95,
+    discount: "10% OFF",
+    discountTone: "orange",
+  },
+  {
+    id: "toyota-yaris",
+    name: "Toyota Yaris",
+    type: "Hatchback",
+    seats: 5,
+    trans: "Automatic",
+    engine: "1.5L",
+    bags: 2,
+    price: 35,
+  },
+  {
+    id: "honda-jazz",
+    name: "Honda Jazz",
+    type: "Hatchback",
+    seats: 5,
+    trans: "Automatic",
+    engine: "1.5L",
+    bags: 2,
+    price: 33,
+    oldPrice: 38,
+    discount: "13% OFF",
+    discountTone: "orange",
+  },
+  {
+    id: "suzuki-ertiga",
+    name: "Suzuki Ertiga",
+    type: "MPV",
+    seats: 7,
+    trans: "Automatic",
+    engine: "1.5L",
+    bags: 2,
+    price: 38,
+  },
+  {
+    id: "daihatsu-sigra",
+    name: "Daihatsu Sigra",
+    type: "MPV",
+    seats: 7,
+    trans: "Manual",
+    engine: "1.2L",
+    bags: 2,
+    price: 22,
+  },
+  {
+    id: "toyota-vios",
+    name: "Toyota Vios",
+    type: "Sedan",
+    seats: 5,
+    trans: "Automatic",
+    engine: "1.5L",
+    bags: 2,
+    price: 42,
+  },
+  {
+    id: "honda-city",
+    name: "Honda City",
+    type: "Sedan",
+    seats: 5,
+    trans: "Automatic",
+    engine: "1.5L",
+    bags: 2,
+    price: 44,
+    oldPrice: 49,
+    discount: "10% OFF",
+    discountTone: "orange",
+  },
+  {
+    id: "toyota-calya",
+    name: "Toyota Calya",
+    type: "MPV",
+    seats: 7,
+    trans: "Manual",
+    engine: "1.2L",
+    bags: 2,
+    price: 24,
+  },
+  {
+    id: "suzuki-jimny",
+    name: "Suzuki Jimny",
+    type: "SUV",
+    seats: 4,
+    trans: "Automatic",
+    engine: "1.5L",
+    bags: 1,
+    price: 60,
+    oldPrice: 70,
+    discount: "14% OFF",
+    discountTone: "green",
+  },
+  {
+    id: "mazda-cx5",
+    name: "Mazda CX-5",
+    type: "SUV",
+    seats: 5,
+    trans: "Automatic",
+    engine: "2.0L",
+    bags: 3,
+    price: 78,
+  },
+  {
+    id: "toyota-camry",
+    name: "Toyota Camry",
+    type: "Sedan",
+    seats: 5,
+    trans: "Automatic",
+    engine: "2.5L",
+    bags: 3,
+    price: 92,
+  },
+  {
+    id: "wuling-confero",
+    name: "Wuling Confero",
+    type: "MPV",
+    seats: 7,
+    trans: "Manual",
+    engine: "1.5L",
+    bags: 2,
+    price: 28,
+  },
+  {
+    id: "daihatsu-ayla",
+    name: "Daihatsu Ayla",
+    type: "Hatchback",
+    seats: 5,
+    trans: "Manual",
+    engine: "1.0L",
+    bags: 1,
+    price: 20,
+    oldPrice: 24,
+    discount: "16% OFF",
+    discountTone: "green",
+  },
+  {
+    id: "nissan-xtrail",
+    name: "Nissan X-Trail",
+    type: "SUV",
+    seats: 7,
+    trans: "Automatic",
+    engine: "2.5L",
+    bags: 3,
+    price: 72,
+  },
+  {
+    id: "honda-brv",
+    name: "Honda BR-V",
+    type: "SUV",
+    seats: 7,
+    trans: "Automatic",
+    engine: "1.5L",
+    bags: 2,
+    price: 52,
+  },
 ];
+
+// How many cars to show per page in the results grid. 8 fills two rows of
+// the xl 4-col grid; on narrower breakpoints it produces 4 / 4 (lg) or 4 / 4
+// (sm) which still reads naturally.
+const PAGE_SIZE = 8;
 
 // Small presentational pill used next to the car name (e.g. "MPV", "SUV").
 function TypeBadge({ children }) {
@@ -259,24 +424,102 @@ function VehicleCard({ car, favorited, onToggleFavorite }) {
       </div>
 
       {/* CTA row */}
-      <div className={`mt-auto grid gap-2 ${car.showBookNow ? "grid-cols-2" : "grid-cols-1"}`}>
+      <div className="mt-auto grid grid-cols-2 gap-2">
         <button
           type="button"
           className="btn-glass-fill h-9 text-xs font-semibold rounded-md border-2 border-[#1d4046] text-[#1d4046]"
         >
           View details
         </button>
-        {car.showBookNow && (
-          <button
-            type="button"
-            className="btn-glass h-9 text-xs font-semibold rounded-md text-white"
-            style={{ backgroundColor: TEAL }}
-          >
-            Book now
-          </button>
-        )}
+        <button
+          type="button"
+          className="btn-glass h-9 text-xs font-semibold rounded-md text-white"
+          style={{ backgroundColor: TEAL }}
+        >
+          Book now
+        </button>
       </div>
     </div>
+  );
+}
+
+// Build the array of page tokens to render: numbers and "…" placeholders.
+// For 5-or-fewer pages we just list them; otherwise we always pin first/last
+// and show a 1-page window around the active page, inserting "…" wherever a
+// gap > 1 falls between adjacent shown pages.
+function buildPageList(current, total) {
+  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+  const wanted = new Set([1, total, current - 1, current, current + 1]);
+  const pages = [...wanted].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+  const out = [];
+  pages.forEach((p, i) => {
+    if (i > 0 && p - pages[i - 1] > 1) out.push("…");
+    out.push(p);
+  });
+  return out;
+}
+
+// Pagination control under the results grid. Renders a Prev / numbered / Next
+// row with disabled boundaries and a teal active-page pill. Numbers are real
+// buttons; the "…" tokens render as inert spans.
+function Pagination({ currentPage, totalPages, onPageChange }) {
+  if (totalPages <= 1) return null;
+  const pages = buildPageList(currentPage, totalPages);
+
+  const navBtn =
+    "h-9 w-9 inline-flex items-center justify-center rounded-md border border-gray-200 bg-white text-gray-600 transition-colors hover:border-[#1d4046] hover:text-[#1d4046] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:text-gray-600";
+
+  return (
+    <nav
+      aria-label="Pagination"
+      className="flex items-center justify-center gap-2 mt-8"
+    >
+      <button
+        type="button"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        aria-label="Previous page"
+        className={navBtn}
+      >
+        <ChevronLeft className="w-4 h-4" />
+      </button>
+
+      <ul className="flex items-center gap-1">
+        {pages.map((p, i) =>
+          p === "…" ? (
+            <li key={`gap-${i}`} className="px-1 text-sm text-gray-400 select-none">
+              …
+            </li>
+          ) : (
+            <li key={p}>
+              <button
+                type="button"
+                aria-current={p === currentPage ? "page" : undefined}
+                aria-label={`Page ${p}`}
+                onClick={() => onPageChange(p)}
+                className={`h-9 min-w-9 px-3 inline-flex items-center justify-center rounded-md text-sm font-semibold transition-colors ${
+                  p === currentPage
+                    ? "bg-[#1d4046] text-white border border-[#1d4046]"
+                    : "bg-white text-gray-700 border border-gray-200 hover:border-[#1d4046] hover:text-[#1d4046]"
+                }`}
+              >
+                {p}
+              </button>
+            </li>
+          )
+        )}
+      </ul>
+
+      <button
+        type="button"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        aria-label="Next page"
+        className={navBtn}
+      >
+        <ChevronRight className="w-4 h-4" />
+      </button>
+    </nav>
   );
 }
 
@@ -308,6 +551,19 @@ export default function Vehicles() {
   const updateBooking = (key, value) =>
     setBooking((prev) => ({ ...prev, [key]: value }));
 
+  // Pagination state. The grid renders only the slice for `currentPage`.
+  // `gridSectionRef` lets us scroll the user back up to the results header
+  // when they jump pages so they aren't stranded mid-list.
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(VEHICLES.length / PAGE_SIZE));
+  const pageStartIndex = (currentPage - 1) * PAGE_SIZE;
+  const pageEndIndex = Math.min(pageStartIndex + PAGE_SIZE, VEHICLES.length);
+  const visibleVehicles = useMemo(
+    () => VEHICLES.slice(pageStartIndex, pageEndIndex),
+    [pageStartIndex, pageEndIndex]
+  );
+  const gridSectionRef = useRef(null);
+
   const [filters, setFilters] = useState({
     vehicleType: VEHICLE_TYPE_OPTIONS[0],
     price: PRICE_RANGE_OPTIONS[0],
@@ -316,10 +572,19 @@ export default function Vehicles() {
     fuel: FUEL_OPTIONS[0],
     sort: SORT_OPTIONS[0],
   });
-  const updateFilter = (key, value) =>
+  // Filter / chip changes both reset pagination back to page 1 — handled
+  // directly in the setters here so we don't rely on a setState-in-effect
+  // pattern (which lints and causes a redundant render).
+  const updateFilter = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
+    setCurrentPage(1);
+  };
 
-  const [activeChip, setActiveChip] = useState(FILTER_CHIPS[0]);
+  const [activeChip, setActiveChipState] = useState(FILTER_CHIPS[0]);
+  const setActiveChip = (chip) => {
+    setActiveChipState(chip);
+    setCurrentPage(1);
+  };
   const [view, setView] = useState("grid");
   const [favorites, setFavorites] = useState(new Set());
   const toggleFavorite = (id) =>
@@ -330,8 +595,15 @@ export default function Vehicles() {
       return next;
     });
 
+  const handlePageChange = (next) => {
+    if (next < 1 || next > totalPages || next === currentPage) return;
+    setCurrentPage(next);
+    gridSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    setCurrentPage(1);
     console.log("Search vehicles", { booking, filters, activeChip });
   };
 
@@ -413,6 +685,7 @@ export default function Vehicles() {
                 value={booking.pickup}
                 onChange={(v) => updateBooking("pickup", v)}
                 options={PICKUP_LOCATIONS}
+                allowCustom
               />
               <BookingDateTime
                 id="v-pickup-at"
@@ -519,10 +792,14 @@ export default function Vehicles() {
         </section>
 
         {/* ==================== 3. RESULTS HEADER ==================== */}
-        <section className="px-4 sm:px-6 lg:px-8">
+        <section ref={gridSectionRef} className="px-4 sm:px-6 lg:px-8 scroll-mt-20">
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 mb-5">
             <div className="font-bold text-[#1a1a1a] text-base lg:text-lg">
-              {VEHICLES.length} vehicles available
+              Showing{" "}
+              <span className="text-[#1d4046]">
+                {pageStartIndex + 1}–{pageEndIndex}
+              </span>{" "}
+              of {VEHICLES.length} vehicles
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-2 text-xs">
@@ -555,11 +832,11 @@ export default function Vehicles() {
             <div
               className={
                 view === "grid"
-                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5"
+                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5"
                   : "grid grid-cols-1 gap-4"
               }
             >
-              {VEHICLES.map((car) => (
+              {visibleVehicles.map((car) => (
                 <VehicleCard
                   key={car.id}
                   car={car}
@@ -568,6 +845,12 @@ export default function Vehicles() {
                 />
               ))}
             </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         </section>
 

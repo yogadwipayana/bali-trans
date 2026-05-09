@@ -8,30 +8,15 @@ import {
 
 const TEAL = "#1d4046";
 
-const FOOTER_COLUMNS = [
-  {
-    head: "COMPANY",
-    items: ["About us", "Careers", "Blog", "Terms & conditions", "Privacy policy"],
-  },
-  {
-    head: "SERVICES",
-    items: ["Airport pickup", "Hotel delivery", "Driver services", "Travel guide", "FAQ"],
-  },
-  {
-    head: "RESOURCES",
-    items: ["Destinations", "Bali travel tips", "Events in Bali", "Guide & articles", "Sitemap"],
-  },
-];
-
-// Shared site footer: 5 columns on desktop (brand / COMPANY / SERVICES /
-// RESOURCES / CONTACT / STAY UPDATED). Collapses responsively on mobile.
+// Shared site footer: 3 columns on desktop (brand / CONTACT / STAY UPDATED).
+// Collapses responsively on mobile.
 export function Footer() {
   return (
     <footer className="py-12 lg:py-14 px-4 sm:px-6 lg:px-8 bg-white border-t border-gray-100">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.6fr)] gap-8 lg:gap-6 pb-10 mb-6 border-b border-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1.2fr)_minmax(0,1.6fr)] gap-8 lg:gap-6 pb-10 mb-6 border-b border-gray-100">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-3 lg:col-span-1">
+          <div className="md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
               <div
                 className="w-10 h-10 rounded-md flex items-center justify-center"
@@ -87,26 +72,6 @@ export function Footer() {
             </div>
           </div>
 
-          {FOOTER_COLUMNS.map((col) => (
-            <div key={col.head}>
-              <h4 className="font-bold text-[11px] tracking-[0.2em] uppercase text-gray-700 mb-4">
-                {col.head}
-              </h4>
-              <ul className="space-y-2.5">
-                {col.items.map((item) => (
-                  <li key={item}>
-                    <a
-                      href={`#${item.toLowerCase().replace(/\s/g, "-")}`}
-                      className="text-sm text-gray-500 hover:text-[#1d4046] transition-colors"
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-
           <div className="min-w-0">
             <h4 className="font-bold text-[11px] tracking-[0.2em] uppercase text-gray-700 mb-4">
               CONTACT
@@ -126,7 +91,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="col-span-2 md:col-span-3 lg:col-span-1">
+          <div>
             <h4 className="font-bold text-[11px] tracking-[0.2em] uppercase text-gray-700 mb-2">
               STAY UPDATED
             </h4>

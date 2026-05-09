@@ -31,10 +31,6 @@ const CREAM = "#fff5e6";
 
 const PICKUP_LOCATIONS = [
   "Ngurah Rai Airport (DPS)",
-  "Ubud",
-  "Seminyak",
-  "Kuta",
-  "Nusa Dua",
 ];
 
 const VEHICLE_TYPES = [
@@ -112,7 +108,7 @@ export default function Home() {
                   fontWeight: 700,
                 }}
               >
-                Drive Bali. Make it<br className="hidden lg:inline" /> unforgettable.
+                Your Bali journey<br className="hidden lg:inline" /> starts here.
               </h1>
 
               {/* Subhead */}
@@ -222,6 +218,7 @@ export default function Home() {
                 value={booking.pickup}
                 onChange={(v) => updateBooking("pickup", v)}
                 options={PICKUP_LOCATIONS}
+                allowCustom
               />
 
               {/* Pick-up date & time */}
