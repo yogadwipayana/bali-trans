@@ -113,27 +113,45 @@ code {
 }
 
 /* ============================================================
-   .btn-glass — convex glass wash hover
+   .btn-glass — liquid rise hover (filled buttons)
 
-   On hover, a translucent gradient overlay slides down from the
-   top of the button. The overlay combines:
-     - a top-anchored radial highlight (the "convex" sheen)
-     - a vertical gradient from light to slightly darker
-     - inset highlight + bottom shadow for a domed look
+   On hover, the button fills from the bottom up like water
+   rising inside a glass. A single pseudo-element carries the
+   color; it starts translated fully below the button and eases
+   up into place.
 
-   Implementation notes:
-     * `isolation: isolate` creates a fresh stacking context so
-       `z-index: -1` on ::before stays inside the button (sits
-       above the button's painted background but below the text/
-       icon content, which are in-flow descendants).
-     * The overlay starts translated up (-100%) and animates to 0.
-     * `pointer-events: none` so it never blocks clicks.
-     * Honors prefers-reduced-motion.
+   The "liquid" feel is carried by the motion and easing, not
+   by visual ornamentation — a classic easeOutExpo curve lets
+   the fill move quickly at first and gently settle at the top,
+   like water finding its level. Slow (1.2s) to let the motion
+   read clearly.
+
+   For SOLID-COLOR (e.g. teal) buttons with light text:
+     resting:  ████████ (teal bg, white text)
+     hover:    ░░░░░░░░ (white liquid filled, teal text)
+
+   Customize per-button with CSS vars:
+     --btn-fill          — liquid color           (default: #ffffff)
+     --btn-on-fill       — text color on hover    (default: #1d4046)
+     --btn-hover-border  — outline on hover       (default: #000000)
+
+   The hover-state outline is intentional: when the fill is
+   white (the default), buttons sitting on white backgrounds
+   would otherwise vanish at the end of the animation. The
+   black outline keeps them legible. We use `outline` instead
+   of `border` so the button's content area doesn't shift, and
+   it cross-fades with the same easing as the text color.
    ============================================================ */
 .btn-glass {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  /* Transparent outline at rest reserves the property so we can
+     transition just the color on hover. No layout shift. */
+  outline: 1px solid transparent;
+  transition:
+    color 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    outline-color 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-glass::before {
@@ -143,27 +161,10 @@ code {
   z-index: -1;
   pointer-events: none;
   border-radius: inherit;
-  background:
-    /* top sheen — the "convex" highlight */
-    radial-gradient(
-      ellipse 130% 65% at 50% 0%,
-      rgba(255, 255, 255, 0.4) 0%,
-      rgba(255, 255, 255, 0.12) 35%,
-      rgba(255, 255, 255, 0) 70%
-    ),
-    /* light → dark vertical wash */
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.22) 0%,
-      rgba(255, 255, 255, 0.06) 28%,
-      rgba(0, 0, 0, 0.05) 60%,
-      rgba(0, 0, 0, 0.22) 100%
-    );
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -2px 6px rgba(0, 0, 0, 0.18);
-  transform: translateY(-101%);
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--btn-fill, #ffffff);
+  /* Start fully below the button, rise to cover it on hover. */
+  transform: translateY(100%);
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
 
@@ -172,15 +173,21 @@ code {
   transform: translateY(0);
 }
 
+.btn-glass:hover,
+.btn-glass:focus-visible {
+  color: var(--btn-on-fill, #1d4046);
+  outline-color: var(--btn-hover-border, #000000);
+}
+
 .btn-glass:active::before {
-  transition-duration: 0.15s;
-  /* tiny press-in cue */
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    inset 0 -1px 3px rgba(0, 0, 0, 0.25);
+  /* Snappier settle on press. */
+  transition-duration: 0.45s;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .btn-glass {
+    transition: color 0.2s ease;
+  }
   .btn-glass::before {
     transition: opacity 0.2s ease;
     transform: translateY(0);
@@ -193,27 +200,22 @@ code {
 }
 
 /* ============================================================
-   .btn-glass-fill — convex glass FILL animation
+   .btn-glass-fill — liquid rise hover (outlined buttons)
 
-   For outlined / ghost buttons (transparent background, colored
-   border + text). On hover, an opaque colored fill (with the
-   same convex glass shading as .btn-glass) sweeps down from the
-   top, and the text fades from --btn-fill to --btn-on-fill.
+   Same rising-liquid motion as .btn-glass, but the fill is
+   opaque brand color and the text transitions from --btn-fill
+   (the border/text color at rest) to --btn-on-fill (white) as
+   the water rises.
 
    Customize per-button with CSS vars:
-     --btn-fill     (default: #1d4046, the teal)
+     --btn-fill     (default: #1d4046)
      --btn-on-fill  (default: #ffffff)
-
-   Example:
-     <button className="btn-glass-fill" style={{ "--btn-fill": "#aa3bff" }}>
-       Buy
-     </button>
    ============================================================ */
 .btn-glass-fill {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  transition: color 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: color 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-glass-fill::before {
@@ -223,21 +225,9 @@ code {
   z-index: -1;
   pointer-events: none;
   border-radius: inherit;
-  background:
-    /* convex top sheen */
-    radial-gradient(
-      ellipse 130% 65% at 50% 0%,
-      rgba(255, 255, 255, 0.3) 0%,
-      rgba(255, 255, 255, 0.08) 40%,
-      rgba(255, 255, 255, 0) 70%
-    ),
-    /* solid fill — sits underneath the gradient */
-    var(--btn-fill, #1d4046);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -2px 6px rgba(0, 0, 0, 0.2);
-  transform: translateY(-101%);
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--btn-fill, #1d4046);
+  transform: translateY(100%);
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
 }
 
@@ -252,7 +242,7 @@ code {
 }
 
 .btn-glass-fill:active::before {
-  transition-duration: 0.15s;
+  transition-duration: 0.45s;
 }
 
 @media (prefers-reduced-motion: reduce) {
