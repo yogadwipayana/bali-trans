@@ -13,24 +13,22 @@ import {
   Check,
   ChevronDown,
   Clock,
-  Footprints,
   Heart,
-  Home,
-  IdCard,
   LayoutGrid,
-  LifeBuoy,
   LogOut,
   Map as MapIcon,
-  MessageCircle,
   Navigation,
   Search,
   Settings,
+  SlidersHorizontal,
   Sparkles,
   Star,
-  StickyNote,
   User,
 } from "lucide-react";
 
+import DashboardSidebar from "@/components/DashboardSidebar";
+import DashboardTopBar from "@/components/DashboardTopBar";
+import { getNavIdFromPath } from "@/components/dashboardNav";
 import { useLockedViewport } from "@/hooks/useFullScreenRoot";
 
 // ---------------------------------------------------------------------------
@@ -46,29 +44,6 @@ import { useLockedViewport } from "@/hooks/useFullScreenRoot";
 // =========================================================================
 // MOCK DATA
 // =========================================================================
-
-// Sidebar destinations. The component renders three groups (primary,
-// secondary, footer). Items with an `href` cause real route navigation
-// when clicked; items without an href just toggle the active highlight
-// (used for in-page filters / popovers like Favourites or Notifications).
-const NAV_PRIMARY = [
-  { id: "home", icon: Home, label: "Home", href: "/dashboard" },
-  { id: "vehicles", icon: Car, label: "Vehicles", href: "/dashboard/vehicles" },
-  { id: "notes", icon: StickyNote, label: "Notes" },
-  { id: "favourites", icon: Heart, label: "Favourites" },
-  { id: "recents", icon: Clock, label: "Recents" },
-];
-
-const NAV_SECONDARY = [
-  { id: "notifications", icon: Bell, label: "Notifications" },
-  { id: "chat", icon: MessageCircle, label: "Chat" },
-];
-
-const NAV_FOOTER = [
-  { id: "license", icon: IdCard, label: "License" },
-  { id: "support", icon: LifeBuoy, label: "Support" },
-  { id: "logout", icon: LogOut, label: "Logout" },
-];
 
 // Filter option lists. The filter values themselves live in component state
 // so they can be flipped on/off; these arrays just describe what's available.
@@ -107,7 +82,6 @@ const PRICE_MIN = 5;
 const PRICE_MAX = 100;
 
 const SORT_OPTIONS = [
-  { id: "distance", label: "Closest to me" },
   { id: "price-asc", label: "Price: low to high" },
   { id: "price-desc", label: "Price: high to low" },
   { id: "rating", label: "Highest rated" },
@@ -416,7 +390,7 @@ function useClickOutside(ref, onOutside, isActive) {
 // SMALL PRESENTATIONAL PIECES
 // =========================================================================
 
-// "AUTO ULTIMATE" wordmark — a black tile with a half-disc cutout next to
+// "Bali Trans" wordmark — a black tile with a half-disc cutout next to
 // the stacked text, recreated here in pure HTML so we don't ship an SVG
 // asset for one logo.
 function BrandMark() {
@@ -426,8 +400,8 @@ function BrandMark() {
         <span className="block h-[18px] w-[18px] rotate-[20deg] rounded-tl-[16px] rounded-br-[16px] bg-white" />
       </div>
       <div className="leading-[0.95] text-[10.5px] font-black tracking-[0.04em] text-[#0f0f0f]">
-        <div>AUTO</div>
-        <div>ULTIMATE</div>
+        <div>BALI</div>
+        <div>TRANS</div>
       </div>
     </div>
   );
@@ -437,32 +411,8 @@ function BrandMark() {
 // current sidebar selection. The bell variant carries an unread dot. All
 // dimensions are absolute pixels (not rem) so the layout doesn't squeeze
 // at the project's >1024px-viewport 18px root font size.
-function SidebarItem({ icon: Icon, label, active = false, dot = false, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-current={active ? "page" : undefined}
-      title={label}
-      className={`group relative flex h-[36px] w-full items-center gap-[10px] px-[14px] text-left text-[11.5px] transition-colors ${
-        active
-          ? "font-semibold text-[#0f0f0f]"
-          : "font-medium text-[#3a3a3a] hover:text-[#0f0f0f]"
-      }`}
-    >
-      {active && (
-        <span className="absolute left-0 top-1/2 h-[20px] w-[2px] -translate-y-1/2 rounded-r-full bg-[#0f0f0f]" />
-      )}
-      <span className="relative">
-        <Icon className="h-[16px] w-[16px] stroke-[1.7]" />
-        {dot && (
-          <span className="absolute -right-0.5 -top-0.5 h-[6px] w-[6px] rounded-full bg-[#ff3344] ring-2 ring-white" />
-        )}
-      </span>
-      <span className="truncate">{label}</span>
-    </button>
-  );
-}
+// The sidebar rail itself now lives in `@/components/DashboardSidebar` so
+// /dashboard and /dashboard/vehicles render the exact same rail.
 
 // Pill button used by the Rental type and Transmission segmented controls.
 function SegmentedPill({ label, active, onClick }) {
@@ -471,10 +421,10 @@ function SegmentedPill({ label, active, onClick }) {
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`h-7 rounded-[6px] border px-3 text-[11.5px] font-medium transition-colors ${
+      className={`h-8 flex-1 rounded-[6px] text-[11px] font-semibold transition-all ${
         active
-          ? "border-[#111111] bg-white text-[#111111]"
-          : "border-[#ececec] bg-white text-[#222222] hover:border-[#bcbcbc]"
+          ? "bg-[#0f0f0f] text-white shadow-sm"
+          : "text-[#5e5e5e] hover:text-[#0f0f0f]"
       }`}
     >
       {label}
@@ -615,22 +565,15 @@ function PriceHistogram({ value, onChange }) {
         />
       </div>
 
-      <div className="mt-1 grid grid-cols-2 gap-1.5">
-        <div className="rounded-[4px] bg-[#f6f6f6] px-3 py-1.5">
-          <div className="text-[9px] font-semibold uppercase tracking-[0.04em] text-[#a8a8a8]">
-            From
-          </div>
-          <div className="mt-0.5 text-right text-[11px] font-bold text-[#101010]">
-            ${from.toFixed(2)}
-          </div>
+      <div className="mt-2 flex items-center gap-2">
+        <div className="flex-1 rounded-[6px] border border-[#e6e6e6] bg-white px-3 py-2">
+          <div className="text-[9px] font-semibold uppercase tracking-[0.06em] text-[#a4a4a4]">Min</div>
+          <div className="text-[12px] font-bold text-[#0f0f0f]">${from.toFixed(2)}</div>
         </div>
-        <div className="rounded-[4px] bg-[#f6f6f6] px-3 py-1.5">
-          <div className="text-[9px] font-semibold uppercase tracking-[0.04em] text-[#a8a8a8]">
-            To
-          </div>
-          <div className="mt-0.5 text-right text-[11px] font-bold text-[#101010]">
-            ${to.toFixed(2)}
-          </div>
+        <span className="text-[10px] text-[#a4a4a4]">—</span>
+        <div className="flex-1 rounded-[6px] border border-[#e6e6e6] bg-white px-3 py-2">
+          <div className="text-[9px] font-semibold uppercase tracking-[0.06em] text-[#a4a4a4]">Max</div>
+          <div className="text-[12px] font-bold text-[#0f0f0f]">${to.toFixed(2)}</div>
         </div>
       </div>
     </div>
@@ -746,11 +689,6 @@ function VehicleCard({ vehicle, isFavorite, onToggleFavorite }) {
     <article className="flex h-[200px] flex-col justify-between border border-[#e9e9e9] bg-white px-3 py-3">
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-3 text-[10.5px] font-medium text-[#7c7c7c]">
-          <span className="inline-flex items-center gap-1">
-            <Footprints className="h-3 w-3 text-[#2a2a2a]" />
-            <strong className="font-semibold text-[#1a1a1a]">{vehicle.distance}</strong>
-            <span className="text-[#9c9c9c]">({vehicle.eta})</span>
-          </span>
           <span className="inline-flex items-center gap-1">
             <Star className="h-3 w-3 fill-[#ffc933] text-[#ffc933]" />
             <strong className="font-semibold text-[#1a1a1a]">
@@ -895,40 +833,19 @@ export default function DashboardVehicles() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // ----- Live clock (UTC +8) ------------------------------------------------
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => { const id = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(id); }, []);
+  const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: "Asia/Makassar" });
+
   // ----- Sidebar nav --------------------------------------------------------
   // Active item is derived from the current URL where possible (so /dashboard
   // lights up "Home" and /dashboard/vehicles lights up "Vehicles") and falls
   // back to local state for items without a route — Favourites toggling the
-  // saved-only filter, Notifications opening the popover, etc.
-  const ALL_NAV_ITEMS = [...NAV_PRIMARY, ...NAV_SECONDARY, ...NAV_FOOTER];
-  const navIdFromPath = (path) =>
-    ALL_NAV_ITEMS.find((item) => item.href === path)?.id;
-
+  // saved-only filter, for example.
   const [activeNav, setActiveNav] = useState(
-    () => navIdFromPath(location.pathname) ?? "vehicles",
+    () => getNavIdFromPath(location.pathname) ?? "vehicles",
   );
-
-  const handleNavClick = (item) => {
-    if (item.id === "logout") {
-      navigate("/sign-in");
-      return;
-    }
-    // Notifications open as a popover (handled separately) but we still
-    // mark the bell as the visited item.
-    if (item.id === "notifications") {
-      setNotificationsOpen((value) => !value);
-      setActiveNav(item.id);
-      return;
-    }
-    // Items with an `href` are real routes — navigate and let the next page
-    // own its own active state. No-op when we're already there.
-    if (item.href) {
-      if (item.href !== location.pathname) navigate(item.href);
-      setActiveNav(item.id);
-      return;
-    }
-    setActiveNav(item.id);
-  };
 
   // ----- Filters ------------------------------------------------------------
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
@@ -967,8 +884,7 @@ export default function DashboardVehicles() {
     setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }));
 
   // ----- Sort & view --------------------------------------------------------
-  const [sortId, setSortId] = useState("distance");
-  const [showMap, setShowMap] = useState(false);
+  const [sortId, setSortId] = useState("price-asc");
   const sortLabel =
     SORT_OPTIONS.find((option) => option.id === sortId)?.label ?? "Sort";
 
@@ -1038,17 +954,15 @@ export default function DashboardVehicles() {
   }, [filteredVehicles, sortId]);
 
   // ----- Header popovers ---------------------------------------------------
-  const [proOpen, setProOpen] = useState(false);
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
 
-  const proRef = useRef(null);
   const profileRef = useRef(null);
   const notificationsRef = useRef(null);
   const sortRef = useRef(null);
 
-  useClickOutside(proRef, () => setProOpen(false), proOpen);
   useClickOutside(profileRef, () => setProfileOpen(false), profileOpen);
   useClickOutside(
     notificationsRef,
@@ -1059,12 +973,12 @@ export default function DashboardVehicles() {
 
   // ----- Render ------------------------------------------------------------
   return (
-    <div className="h-screen overflow-hidden bg-[#f3f4f4] font-sans text-[#111111] [color-scheme:light]">
+    <div className="h-screen overflow-hidden bg-[#f3f4f4] font-sans text-[13px] text-[#111111] [color-scheme:light]">
       <Helmet>
         <title>Dashboard v2 · Bali Trans</title>
         <meta
           name="description"
-          content="Vehicle catalog dashboard rebuilt to match the AUTO ULTIMATE rental layout."
+          content="Vehicle catalog dashboard rebuilt to match the Bali Trans rental layout."
         />
       </Helmet>
 
@@ -1076,218 +990,29 @@ export default function DashboardVehicles() {
           knocking the page over its 100vh budget — `h-12` would
           render at 54px on this project and break the calc below.
           ============================================================ */}
-      <header className="relative z-30 flex h-[48px] items-center border-b border-[#e6e6e6] bg-white">
-        <div className="flex h-full w-[120px] shrink-0 items-center px-[14px]">
-          <BrandMark />
-        </div>
-        <div className="flex h-full flex-1 items-center justify-between border-l border-[#ececec] px-5">
-          <div className="flex items-center gap-7 text-[12px] font-medium text-[#2c2c2c]">
-            <span className="inline-flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-[#3d3d3d]" />
-              01:48 PM (UTC -7)
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Navigation className="h-3.5 w-3.5 text-[#3d3d3d]" />
-              San Francisco, US
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Notifications popover */}
-            <div ref={notificationsRef} className="relative">
-              <button
-                type="button"
-                aria-label="Notifications"
-                onClick={() => setNotificationsOpen((v) => !v)}
-                className="relative grid h-7 w-7 place-items-center rounded-full text-[#2a2a2a] hover:bg-[#f5f5f5]"
-              >
-                <Bell className="h-[15px] w-[15px]" />
-                <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#ff3344] ring-2 ring-white" />
-              </button>
-              {notificationsOpen && (
-                <div className="absolute right-0 top-full z-40 mt-2 w-[280px] rounded-md border border-[#ececec] bg-white shadow-[0_8px_28px_rgba(0,0,0,0.12)]">
-                  <div className="flex items-center justify-between border-b border-[#ececec] px-3 py-2">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#a4a4a4]">
-                      Notifications
-                    </span>
-                    <span className="text-[10px] font-medium text-[#9a9a9a]">
-                      {NOTIFICATIONS.length} new
-                    </span>
-                  </div>
-                  <ul className="max-h-[260px] overflow-y-auto">
-                    {NOTIFICATIONS.map((item) => (
-                      <li
-                        key={item.id}
-                        className="border-b border-[#f4f4f4] px-3 py-2 last:border-b-0"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="text-[12px] font-semibold text-[#101010]">
-                            {item.title}
-                          </div>
-                          <span className="text-[10px] font-medium text-[#9a9a9a] whitespace-nowrap">
-                            {item.time}
-                          </span>
-                        </div>
-                        <div className="mt-1 text-[11px] text-[#5e5e5e]">
-                          {item.body}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            {/* PRO features popover */}
-            <div ref={proRef} className="relative">
-              <button
-                type="button"
-                onClick={() => setProOpen((v) => !v)}
-                aria-expanded={proOpen}
-                className="inline-flex h-7 items-center gap-1.5 rounded-[7px] bg-[#101010] px-3 text-[11px] font-bold tracking-[0.01em] text-white shadow-[0_2px_6px_rgba(0,0,0,0.18)]"
-              >
-                <Sparkles className="h-3 w-3 fill-white text-white" />
-                PRO features
-              </button>
-              {proOpen && (
-                <div className="absolute right-0 top-full z-40 mt-2 w-[260px] rounded-md border border-[#ececec] bg-white p-3 shadow-[0_8px_28px_rgba(0,0,0,0.12)]">
-                  <div className="text-[12px] font-semibold text-[#101010]">
-                    Unlock AUTO ULTIMATE PRO
-                  </div>
-                  <p className="mt-1 text-[11px] leading-snug text-[#5e5e5e]">
-                    Priority pickup, free upgrades and zero booking fees.
-                  </p>
-                  <ul className="mt-2 space-y-1.5 text-[11px] text-[#1a1a1a]">
-                    {[
-                      "Skip the queue at every counter",
-                      "Free model upgrade weekly",
-                      "Late return forgiveness",
-                    ].map((perk) => (
-                      <li key={perk} className="flex items-start gap-1.5">
-                        <Check className="mt-0.5 h-3 w-3 text-[#16a34a]" />
-                        {perk}
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    type="button"
-                    onClick={() => setProOpen(false)}
-                    className="mt-3 inline-flex h-7 w-full items-center justify-center rounded-[6px] bg-[#101010] text-[11px] font-bold text-white"
-                  >
-                    Try PRO free for 14 days
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Avatar / profile menu */}
-            <div ref={profileRef} className="relative">
-              <button
-                type="button"
-                aria-label="Profile menu"
-                onClick={() => setProfileOpen((v) => !v)}
-                className="h-7 w-7 rounded-full border border-[#cfcfcf] bg-[radial-gradient(circle_at_30%_25%,#e7c8a4,#a47650_70%,#6c4527)] transition-shadow hover:shadow-[0_0_0_3px_rgba(0,0,0,0.06)]"
-              />
-              {profileOpen && (
-                <div className="absolute right-0 top-full z-40 mt-2 w-[200px] overflow-hidden rounded-md border border-[#ececec] bg-white shadow-[0_8px_28px_rgba(0,0,0,0.12)]">
-                  <div className="border-b border-[#ececec] px-3 py-2">
-                    <div className="text-[12px] font-semibold text-[#101010]">
-                      Yoga Pratama
-                    </div>
-                    <div className="text-[10.5px] text-[#9a9a9a]">
-                      yoga@autoultimate.app
-                    </div>
-                  </div>
-                  <ul className="py-1 text-[12px] text-[#1a1a1a]">
-                    {[
-                      { label: "Profile", icon: User },
-                      { label: "Settings", icon: Settings },
-                      { label: "My bookings", icon: LayoutGrid },
-                    ].map(({ label, icon: ItemIcon }) => (
-                      <li key={label}>
-                        <button
-                          type="button"
-                          onClick={() => setProfileOpen(false)}
-                          className="flex h-8 w-full items-center gap-2 px-3 hover:bg-[#f6f6f6]"
-                        >
-                          <ItemIcon className="h-3.5 w-3.5 text-[#5e5e5e]" />
-                          {label}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="border-t border-[#ececec]">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setProfileOpen(false);
-                        navigate("/sign-in");
-                      }}
-                      className="flex h-8 w-full items-center gap-2 px-3 text-[12px] font-medium text-[#dc2626] hover:bg-[#fef2f2]"
-                    >
-                      <LogOut className="h-3.5 w-3.5" />
-                      Logout
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <DashboardTopBar />
 
       {/* ============================================================
           BODY
           ============================================================ */}
-      <div className="flex h-[calc(100vh-48px)] overflow-hidden">
+      <div className="flex h-[calc(100vh-var(--header-h))] overflow-hidden">
         {/* --- Sidebar nav rail -------------------------------------
             Width matches the brand cell above so the vertical rule
             between cell and content lines up perfectly. */}
-        <aside className="flex w-[120px] shrink-0 flex-col border-r border-[#e6e6e6] bg-white py-4">
-          <nav className="space-y-0.5">
-            {NAV_PRIMARY.map((item) => (
-              <SidebarItem
-                key={item.id}
-                icon={item.icon}
-                label={item.label}
-                active={activeNav === item.id}
-                onClick={() => handleNavClick(item)}
-              />
-            ))}
-          </nav>
-          <nav className="mt-6 space-y-0.5">
-            {NAV_SECONDARY.map((item) => (
-              <SidebarItem
-                key={item.id}
-                icon={item.icon}
-                label={item.label}
-                active={activeNav === item.id}
-                dot={item.id === "notifications"}
-                onClick={() => handleNavClick(item)}
-              />
-            ))}
-          </nav>
-          <nav className="mt-auto space-y-0.5">
-            {NAV_FOOTER.map((item) => (
-              <SidebarItem
-                key={item.id}
-                icon={item.icon}
-                label={item.label}
-                active={activeNav === item.id}
-                onClick={() => handleNavClick(item)}
-              />
-            ))}
-          </nav>
-        </aside>
+        <DashboardSidebar
+          activeId={activeNav}
+          onSelect={(item) => setActiveNav(item.id)}
+        />
 
         {/* --- Filter panel ----------------------------------------- */}
-        <aside className="w-[224px] shrink-0 overflow-y-auto border-r border-[#e6e6e6] bg-white px-4 py-5">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="text-[14px] font-semibold text-[#111111]">Filter by</div>
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="inline-flex items-center gap-1 text-[10px] font-medium text-[#a8a8a8] hover:text-[#1a1a1a]"
+        <div className="relative shrink-0">
+          <aside className={`overflow-y-auto border-r border-[#e6e6e6] bg-white transition-all duration-200 ${filterPanelOpen ? "w-[224px] px-4 py-5" : "w-0 overflow-hidden border-r-0 px-0 py-0"}`}>
+            <div className="mb-3 flex items-center justify-between">
+              <div className="text-[14px] font-semibold text-[#111111]">Filter by</div>
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="inline-flex items-center gap-1 text-[10px] font-medium text-[#a8a8a8] hover:text-[#1a1a1a]"
             >
               Reset all <span className="text-[#bcbcbc]">×</span>
             </button>
@@ -1298,7 +1023,7 @@ export default function DashboardVehicles() {
             <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.06em] text-[#a4a4a4]">
               Rental type
             </div>
-            <div className="flex gap-1.5">
+            <div className="flex gap-1 rounded-[8px] bg-[#f3f4f4] p-1">
               {RENTAL_TYPES.map((type) => (
                 <SegmentedPill
                   key={type}
@@ -1429,15 +1154,27 @@ export default function DashboardVehicles() {
               ))}
             </div>
           </FilterGroup>
-        </aside>
+          </aside>
+        </div>
 
         {/* --- Main content ----------------------------------------- */}
         <main className="min-w-0 flex-1 overflow-y-auto bg-[#f3f4f4]">
           <div className="flex h-[56px] items-center justify-between px-4">
-            <h1 className="text-[22px] font-semibold leading-none text-[#101010]">
-              {sortedVehicles.length} vehicle{sortedVehicles.length === 1 ? "" : "s"}{" "}
-              to rent
-            </h1>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setFilterPanelOpen((v) => !v)}
+                className={`inline-flex h-8 items-center gap-1.5 rounded-[6px] border px-2.5 text-[11px] font-semibold transition-colors ${filterPanelOpen ? "border-[#0f0f0f] bg-[#0f0f0f] text-white" : "border-[#e6e6e6] bg-white text-[#3a3a3a] hover:bg-[#f5f5f5]"}`}
+                aria-pressed={filterPanelOpen}
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+                Filters
+              </button>
+              <h1 className="text-[22px] font-semibold leading-none text-[#101010]">
+                {sortedVehicles.length} vehicle{sortedVehicles.length === 1 ? "" : "s"}{" "}
+                to rent
+              </h1>
+            </div>
             <div className="flex items-center gap-6 text-[11.5px] font-medium text-[#1a1a1a]">
               {/* Sort dropdown */}
               <div ref={sortRef} className="relative">
@@ -1477,37 +1214,12 @@ export default function DashboardVehicles() {
                   </ul>
                 )}
               </div>
-
-              {/* Show map toggle */}
-              <button
-                type="button"
-                onClick={() => setShowMap((v) => !v)}
-                aria-pressed={showMap}
-                className={`inline-flex items-center gap-1.5 ${
-                  showMap ? "text-[#0f0f0f]" : "text-[#1a1a1a]"
-                }`}
-              >
-                {showMap ? "Hide map" : "Show map"}
-                <MapIcon className="h-4 w-4" />
-              </button>
             </div>
           </div>
 
-          {/* Body — either the grid alone, or grid+map split. */}
-          <div
-            className={
-              showMap
-                ? "grid h-[calc(100vh-48px-56px)] grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2 px-3 pb-4"
-                : "px-3 pb-4"
-            }
-          >
-            <div
-              className={
-                showMap
-                  ? "grid auto-rows-max grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-[10px] overflow-y-auto pr-1"
-                  : "grid grid-cols-[repeat(auto-fill,minmax(248px,1fr))] gap-[10px]"
-              }
-            >
+          {/* Body */}
+          <div className="px-3 pb-4">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(248px,1fr))] gap-[10px]">
               {sortedVehicles.length > 0 ? (
                 sortedVehicles.map((vehicle) => (
                   <VehicleCard
@@ -1521,12 +1233,6 @@ export default function DashboardVehicles() {
                 <EmptyState onReset={resetFilters} />
               )}
             </div>
-
-            {showMap && (
-              <div className="h-full overflow-hidden border border-[#e9e9e9]">
-                <MapPlaceholder vehicles={sortedVehicles} />
-              </div>
-            )}
           </div>
         </main>
       </div>

@@ -14,27 +14,25 @@ import {
   Clock,
   CreditCard,
   Download,
-  Heart,
-  Home,
   IdCard,
   LayoutGrid,
-  LifeBuoy,
   LogOut,
-  MessageCircle,
   MoreVertical,
   Navigation,
   Plane,
   Settings,
   Sparkles,
   Star,
-  StickyNote,
   User,
 } from "lucide-react";
 
+import DashboardSidebar from "@/components/DashboardSidebar";
+import DashboardTopBar from "@/components/DashboardTopBar";
+import { getNavIdFromPath } from "@/components/dashboardNav";
 import { useLockedViewport } from "@/hooks/useFullScreenRoot";
 
 // ---------------------------------------------------------------------------
-// /dashboard — the account home for the AUTO ULTIMATE shell. Shares the same
+// /dashboard — the account home for the Bali Trans shell. Shares the same
 // top header + sidebar nav + popover system as /dashboard/vehicles so both
 // pages feel like one app, but the main content is dashboard widgets:
 // welcome, KPI stats, upcoming trip, quick actions, recent bookings, and
@@ -44,28 +42,6 @@ import { useLockedViewport } from "@/hooks/useFullScreenRoot";
 // =========================================================================
 // MOCK DATA
 // =========================================================================
-
-// Sidebar destinations — same array as /dashboard/vehicles so the active
-// highlight follows the URL automatically (Home lights up on /dashboard,
-// Vehicles on /dashboard/vehicles, etc.).
-const NAV_PRIMARY = [
-  { id: "home", icon: Home, label: "Home", href: "/dashboard" },
-  { id: "vehicles", icon: Car, label: "Vehicles", href: "/dashboard/vehicles" },
-  { id: "notes", icon: StickyNote, label: "Notes" },
-  { id: "favourites", icon: Heart, label: "Favourites" },
-  { id: "recents", icon: Clock, label: "Recents" },
-];
-
-const NAV_SECONDARY = [
-  { id: "notifications", icon: Bell, label: "Notifications" },
-  { id: "chat", icon: MessageCircle, label: "Chat" },
-];
-
-const NAV_FOOTER = [
-  { id: "license", icon: IdCard, label: "License" },
-  { id: "support", icon: LifeBuoy, label: "Support" },
-  { id: "logout", icon: LogOut, label: "Logout" },
-];
 
 // KPI tiles. Each carries an icon, current value, optional delta vs. last
 // month, and a deep-link CTA so the row reads as a quick at-a-glance
@@ -238,7 +214,7 @@ function useClickOutside(ref, onOutside, isActive) {
 // SMALL PRESENTATIONAL PIECES
 // =========================================================================
 
-// "AUTO ULTIMATE" wordmark — same mark as /dashboard/vehicles so the brand
+// "Bali Trans" wordmark — same mark as /dashboard/vehicles so the brand
 // stays consistent across every authed page.
 function BrandMark() {
   return (
@@ -247,8 +223,8 @@ function BrandMark() {
         <span className="block h-[18px] w-[18px] rotate-[20deg] rounded-tl-[16px] rounded-br-[16px] bg-white" />
       </div>
       <div className="leading-[0.95] text-[10.5px] font-black tracking-[0.04em] text-[#0f0f0f]">
-        <div>AUTO</div>
-        <div>ULTIMATE</div>
+        <div>BALI</div>
+        <div>TRANS</div>
       </div>
     </div>
   );
@@ -256,32 +232,8 @@ function BrandMark() {
 
 // Sidebar item — identical to /dashboard/vehicles so both rails render
 // pixel-for-pixel the same.
-function SidebarItem({ icon: Icon, label, active = false, dot = false, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-current={active ? "page" : undefined}
-      title={label}
-      className={`group relative flex h-[36px] w-full items-center gap-[10px] px-[14px] text-left text-[11.5px] transition-colors ${
-        active
-          ? "font-semibold text-[#0f0f0f]"
-          : "font-medium text-[#3a3a3a] hover:text-[#0f0f0f]"
-      }`}
-    >
-      {active && (
-        <span className="absolute left-0 top-1/2 h-[20px] w-[2px] -translate-y-1/2 rounded-r-full bg-[#0f0f0f]" />
-      )}
-      <span className="relative">
-        <Icon className="h-[16px] w-[16px] stroke-[1.7]" />
-        {dot && (
-          <span className="absolute -right-0.5 -top-0.5 h-[6px] w-[6px] rounded-full bg-[#ff3344] ring-2 ring-white" />
-        )}
-      </span>
-      <span className="truncate">{label}</span>
-    </button>
-  );
-}
+// The sidebar rail itself now lives in `@/components/DashboardSidebar` so
+// /dashboard and /dashboard/vehicles render the exact same rail.
 
 // 36-pixel thin-bordered icon container used by the stat cards and quick-
 // action rows. Matches the IconTile used by the redesigned home page.
@@ -338,43 +290,31 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ----- Sidebar nav --------------------------------------------------------
-  const ALL_NAV_ITEMS = [...NAV_PRIMARY, ...NAV_SECONDARY, ...NAV_FOOTER];
-  const navIdFromPath = (path) =>
-    ALL_NAV_ITEMS.find((item) => item.href === path)?.id;
+  // ----- Live clock (UTC +8) ------------------------------------------------
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const timeStr = now.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Makassar",
+  });
 
+  // ----- Sidebar nav --------------------------------------------------------
   const [activeNav, setActiveNav] = useState(
-    () => navIdFromPath(location.pathname) ?? "home",
+    () => getNavIdFromPath(location.pathname) ?? "home",
   );
 
-  const handleNavClick = (item) => {
-    if (item.id === "logout") {
-      navigate("/sign-in");
-      return;
-    }
-    if (item.id === "notifications") {
-      setNotificationsOpen((value) => !value);
-      setActiveNav(item.id);
-      return;
-    }
-    if (item.href) {
-      if (item.href !== location.pathname) navigate(item.href);
-      setActiveNav(item.id);
-      return;
-    }
-    setActiveNav(item.id);
-  };
-
   // ----- Header popovers ---------------------------------------------------
-  const [proOpen, setProOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
-  const proRef = useRef(null);
   const profileRef = useRef(null);
   const notificationsRef = useRef(null);
 
-  useClickOutside(proRef, () => setProOpen(false), proOpen);
   useClickOutside(profileRef, () => setProfileOpen(false), profileOpen);
   useClickOutside(
     notificationsRef,
@@ -389,220 +329,30 @@ export default function Dashboard() {
         <title>Dashboard · Bali Trans</title>
         <meta
           name="description"
-          content="Your AUTO ULTIMATE account at a glance — upcoming trips, recent bookings, rewards, and quick actions."
+          content="Your Bali Trans account at a glance — upcoming trips, recent bookings, rewards, and quick actions."
         />
       </Helmet>
 
       {/* ============================================================
           TOP BAR — same as /dashboard/vehicles for visual continuity.
           ============================================================ */}
-      <header className="relative z-30 flex h-[48px] items-center border-b border-[#e6e6e6] bg-white">
-        <div className="flex h-full w-[120px] shrink-0 items-center px-[14px]">
-          <BrandMark />
-        </div>
-        <div className="flex h-full flex-1 items-center justify-between border-l border-[#ececec] px-5">
-          <div className="flex items-center gap-7 text-[12px] font-medium text-[#2c2c2c]">
-            <span className="inline-flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-[#3d3d3d]" />
-              01:48 PM (UTC -7)
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Navigation className="h-3.5 w-3.5 text-[#3d3d3d]" />
-              San Francisco, US
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Notifications */}
-            <div ref={notificationsRef} className="relative">
-              <button
-                type="button"
-                aria-label="Notifications"
-                onClick={() => setNotificationsOpen((value) => !value)}
-                className="relative grid h-7 w-7 place-items-center rounded-full text-[#2a2a2a] hover:bg-[#f5f5f5]"
-              >
-                <Bell className="h-[15px] w-[15px]" />
-                <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#ff3344] ring-2 ring-white" />
-              </button>
-              {notificationsOpen && (
-                <div className="absolute right-0 top-full z-40 mt-2 w-[280px] rounded-md border border-[#ececec] bg-white shadow-[0_8px_28px_rgba(0,0,0,0.12)]">
-                  <div className="flex items-center justify-between border-b border-[#ececec] px-3 py-2">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#a4a4a4]">
-                      Notifications
-                    </span>
-                    <span className="text-[10px] font-medium text-[#9a9a9a]">
-                      {NOTIFICATIONS.length} new
-                    </span>
-                  </div>
-                  <ul className="max-h-[260px] overflow-y-auto">
-                    {NOTIFICATIONS.map((item) => (
-                      <li
-                        key={item.id}
-                        className="border-b border-[#f4f4f4] px-3 py-2 last:border-b-0"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="text-[12px] font-semibold text-[#101010]">
-                            {item.title}
-                          </div>
-                          <span className="whitespace-nowrap text-[10px] font-medium text-[#9a9a9a]">
-                            {item.time}
-                          </span>
-                        </div>
-                        <div className="mt-1 text-[11px] text-[#5e5e5e]">
-                          {item.body}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            {/* PRO features */}
-            <div ref={proRef} className="relative">
-              <button
-                type="button"
-                onClick={() => setProOpen((value) => !value)}
-                aria-expanded={proOpen}
-                className="inline-flex h-7 items-center gap-1.5 rounded-[7px] bg-[#101010] px-3 text-[11px] font-bold tracking-[0.01em] text-white shadow-[0_2px_6px_rgba(0,0,0,0.18)]"
-              >
-                <Sparkles className="h-3 w-3 fill-white text-white" />
-                PRO features
-              </button>
-              {proOpen && (
-                <div className="absolute right-0 top-full z-40 mt-2 w-[260px] rounded-md border border-[#ececec] bg-white p-3 shadow-[0_8px_28px_rgba(0,0,0,0.12)]">
-                  <div className="text-[12px] font-semibold text-[#101010]">
-                    Unlock AUTO ULTIMATE PRO
-                  </div>
-                  <p className="mt-1 text-[11px] leading-snug text-[#5e5e5e]">
-                    Priority pickup, free upgrades and zero booking fees.
-                  </p>
-                  <ul className="mt-2 space-y-1.5 text-[11px] text-[#1a1a1a]">
-                    {[
-                      "Skip the queue at every counter",
-                      "Free model upgrade weekly",
-                      "Late return forgiveness",
-                    ].map((perk) => (
-                      <li key={perk} className="flex items-start gap-1.5">
-                        <Check className="mt-0.5 h-3 w-3 text-[#16a34a]" />
-                        {perk}
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    type="button"
-                    onClick={() => setProOpen(false)}
-                    className="mt-3 inline-flex h-7 w-full items-center justify-center rounded-[6px] bg-[#101010] text-[11px] font-bold text-white"
-                  >
-                    Try PRO free for 14 days
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Profile menu */}
-            <div ref={profileRef} className="relative">
-              <button
-                type="button"
-                aria-label="Profile menu"
-                onClick={() => setProfileOpen((value) => !value)}
-                className="h-7 w-7 rounded-full border border-[#cfcfcf] bg-[radial-gradient(circle_at_30%_25%,#e7c8a4,#a47650_70%,#6c4527)] transition-shadow hover:shadow-[0_0_0_3px_rgba(0,0,0,0.06)]"
-              />
-              {profileOpen && (
-                <div className="absolute right-0 top-full z-40 mt-2 w-[200px] overflow-hidden rounded-md border border-[#ececec] bg-white shadow-[0_8px_28px_rgba(0,0,0,0.12)]">
-                  <div className="border-b border-[#ececec] px-3 py-2">
-                    <div className="text-[12px] font-semibold text-[#101010]">
-                      Yoga Pratama
-                    </div>
-                    <div className="text-[10.5px] text-[#9a9a9a]">
-                      yoga@autoultimate.app
-                    </div>
-                  </div>
-                  <ul className="py-1 text-[12px] text-[#1a1a1a]">
-                    {[
-                      { label: "Profile", icon: User },
-                      { label: "Settings", icon: Settings },
-                      { label: "My bookings", icon: LayoutGrid },
-                    ].map(({ label, icon: ItemIcon }) => (
-                      <li key={label}>
-                        <button
-                          type="button"
-                          onClick={() => setProfileOpen(false)}
-                          className="flex h-8 w-full items-center gap-2 px-3 hover:bg-[#f6f6f6]"
-                        >
-                          <ItemIcon className="h-3.5 w-3.5 text-[#5e5e5e]" />
-                          {label}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="border-t border-[#ececec]">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setProfileOpen(false);
-                        navigate("/sign-in");
-                      }}
-                      className="flex h-8 w-full items-center gap-2 px-3 text-[12px] font-medium text-[#dc2626] hover:bg-[#fef2f2]"
-                    >
-                      <LogOut className="h-3.5 w-3.5" />
-                      Logout
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <DashboardTopBar />
 
       {/* ============================================================
           BODY — sidebar (left) + dashboard widgets (right).
           ============================================================ */}
-      <div className="flex h-[calc(100vh-48px)] overflow-hidden">
+      <div className="flex h-[calc(100vh-var(--header-h))] overflow-hidden">
         {/* --- Sidebar nav rail ---------------------------------- */}
-        <aside className="flex w-[120px] shrink-0 flex-col border-r border-[#e6e6e6] bg-white py-4">
-          <nav className="space-y-0.5">
-            {NAV_PRIMARY.map((item) => (
-              <SidebarItem
-                key={item.id}
-                icon={item.icon}
-                label={item.label}
-                active={activeNav === item.id}
-                onClick={() => handleNavClick(item)}
-              />
-            ))}
-          </nav>
-          <nav className="mt-6 space-y-0.5">
-            {NAV_SECONDARY.map((item) => (
-              <SidebarItem
-                key={item.id}
-                icon={item.icon}
-                label={item.label}
-                active={activeNav === item.id}
-                dot={item.id === "notifications"}
-                onClick={() => handleNavClick(item)}
-              />
-            ))}
-          </nav>
-          <nav className="mt-auto space-y-0.5">
-            {NAV_FOOTER.map((item) => (
-              <SidebarItem
-                key={item.id}
-                icon={item.icon}
-                label={item.label}
-                active={activeNav === item.id}
-                onClick={() => handleNavClick(item)}
-              />
-            ))}
-          </nav>
-        </aside>
+        <DashboardSidebar
+          activeId={activeNav}
+          onSelect={(item) => setActiveNav(item.id)}
+        />
 
         {/* --- Main content ------------------------------------------
             Scrolls within its own panel so the header + sidebar stay
             pinned while the user moves through the widget stack. */}
         <main className="min-w-0 flex-1 overflow-y-auto bg-[#f3f4f4]">
-          <div className="mx-auto max-w-[1200px] px-6 py-6 lg:px-8 lg:py-8">
+          <div className="mx-auto max-w-[1200px] px-4 py-4 pb-20 md:px-6 md:py-6 md:pb-6 lg:px-8 lg:py-8">
             {/* ---- Welcome strip ---- */}
             <header className="mb-6">
               <span className="inline-flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-[#7c7c7c]">
@@ -610,10 +360,11 @@ export default function Dashboard() {
                 Member · 1,250 points
               </span>
               <h1
-                className="mt-2 font-bold tracking-tight text-[#0f0f0f]"
+                className="font-bold tracking-tight"
                 style={{
-                  margin: "0.5rem 0 0.5rem 0",
-                  fontSize: "clamp(1.625rem, 1rem + 1.5vw, 2.25rem)",
+                  color: "#0f0f0f",
+                  margin: "6px 0 4px 0",
+                  fontSize: "clamp(1.375rem, 0.95rem + 1vw, 1.75rem)",
                   letterSpacing: "-0.02em",
                   fontWeight: 700,
                   lineHeight: 1.15,
@@ -670,8 +421,8 @@ export default function Dashboard() {
               <article className="rounded-[8px] border border-[#e6e6e6] bg-white p-5 lg:p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <h2
-                    className="font-bold text-[#0f0f0f]"
-                    style={{ fontSize: "16px", margin: 0, letterSpacing: "-0.01em" }}
+                    className="font-bold"
+                    style={{ color: "#0f0f0f", fontSize: "16px", margin: 0, letterSpacing: "-0.01em" }}
                   >
                     Upcoming trip
                   </h2>
@@ -778,8 +529,8 @@ export default function Dashboard() {
               {/* Quick actions */}
               <article className="rounded-[8px] border border-[#e6e6e6] bg-white p-5 lg:p-6">
                 <h2
-                  className="mb-3 font-bold text-[#0f0f0f]"
-                  style={{ fontSize: "16px", margin: 0, letterSpacing: "-0.01em" }}
+                  className="mb-3 font-bold"
+                  style={{ color: "#0f0f0f", fontSize: "16px", margin: 0, letterSpacing: "-0.01em" }}
                 >
                   Quick actions
                 </h2>
@@ -818,8 +569,8 @@ export default function Dashboard() {
             >
               <div className="mb-4 flex items-center justify-between">
                 <h2
-                  className="font-bold text-[#0f0f0f]"
-                  style={{ fontSize: "16px", margin: 0, letterSpacing: "-0.01em" }}
+                  className="font-bold"
+                  style={{ color: "#0f0f0f", fontSize: "16px", margin: 0, letterSpacing: "-0.01em" }}
                 >
                   Recent bookings
                 </h2>
@@ -916,8 +667,8 @@ export default function Dashboard() {
               <article className="rounded-[8px] border border-[#e6e6e6] bg-white p-5 lg:p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <h2
-                    className="font-bold text-[#0f0f0f]"
-                    style={{ fontSize: "16px", margin: 0, letterSpacing: "-0.01em" }}
+                    className="font-bold"
+                    style={{ color: "#0f0f0f", fontSize: "16px", margin: 0, letterSpacing: "-0.01em" }}
                   >
                     Saved places
                   </h2>
@@ -953,8 +704,8 @@ export default function Dashboard() {
               {/* Account at a glance */}
               <article className="rounded-[8px] border border-[#e6e6e6] bg-white p-5 lg:p-6">
                 <h2
-                  className="mb-4 font-bold text-[#0f0f0f]"
-                  style={{ fontSize: "16px", margin: 0, letterSpacing: "-0.01em" }}
+                  className="mb-4 font-bold"
+                  style={{ color: "#0f0f0f", fontSize: "16px", margin: 0, letterSpacing: "-0.01em" }}
                 >
                   Account
                 </h2>
@@ -996,24 +747,6 @@ export default function Dashboard() {
                     >
                       Renew
                     </span>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <IconTile icon={Sparkles} />
-                    <div className="min-w-0 flex-1">
-                      <div className="text-[12.5px] font-semibold text-[#0f0f0f]">
-                        AUTO ULTIMATE PRO
-                      </div>
-                      <div className="text-[10.5px] text-[#7c7c7c]">
-                        14-day free trial available
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setProOpen(true)}
-                      className="rounded-[4px] bg-[#0f0f0f] px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.08em] text-white"
-                    >
-                      Try it
-                    </button>
                   </li>
                 </ul>
               </article>

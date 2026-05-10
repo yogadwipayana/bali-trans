@@ -43,6 +43,7 @@ const MUTED = "#7c7c7c"; // secondary text
 const BORDER = "#e6e6e6"; // panel borders
 const SOFT = "#f3f4f4"; // page surface
 const STAR = "#ffc933"; // ratings
+const FAINT = "#a0a0a0"; // de-emphasized text
 const HEART = "#ff3a5e"; // hearts / urgency
 
 // Form data — same contract as before so the booking widget keeps working.
@@ -244,7 +245,7 @@ function OutlineButton({ children, ...props }) {
     <Tag
       type={Tag === "button" ? "button" : undefined}
       {...props}
-      className={`inline-flex items-center justify-center gap-2 h-[44px] rounded-[6px] border px-5 text-[12.5px] font-semibold transition-colors hover:bg-[#0f0f0f] hover:text-white ${
+      className={`inline-flex items-center justify-center gap-2 h-[44px] rounded-[6px] border px-5 text-[12.5px] font-semibold transition-colors hover:bg-[#f5f5f5] ${
         props.className ?? ""
       }`}
       style={{ borderColor: INK, color: INK }}
@@ -352,8 +353,8 @@ export default function Home() {
               </h1>
 
               <p
-                className="text-[14px] lg:text-[15.5px] leading-relaxed mb-6 lg:mb-8 max-w-xl mx-auto lg:mx-0"
-                style={{ color: MUTED }}
+                className="text-[14px] lg:text-[15.5px] leading-relaxed max-w-xl mx-auto lg:mx-0"
+                style={{ color: MUTED, margin: "0 0 1rem 0" }}
               >
                 Premium vehicles, transparent prices, and friendly local service.
                 Airport pickup, hotel delivery, and 24/7 support across Bali.
@@ -570,7 +571,7 @@ export default function Home() {
         </section>
 
         {/* ==================== 3. SPECIAL OFFERS ==================== */}
-        <section id="deals" className="px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+        <section id="deals" className="px-4 sm:px-6 lg:px-8 py-10 lg:pt-0 lg:pb-14">
           <div className="mx-auto max-w-7xl">
             <div className="mb-5 flex items-end justify-between gap-4">
               <div>
@@ -640,7 +641,7 @@ export default function Home() {
         </section>
 
         {/* ==================== 4. FEATURED FLEET ==================== */}
-        <section id="vehicles" className="px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+        <section id="vehicles" className=" px-4 sm:px-6 lg:px-8 py-10 lg:pt-0 lg:pb-14">
           <div className="mx-auto max-w-7xl">
             <div className="mb-5 flex items-end justify-between gap-4">
               <div>
@@ -658,111 +659,46 @@ export default function Home() {
                 return (
                   <article
                     key={car.name}
-                    className="flex flex-col rounded-[8px] border bg-white p-4 lg:p-5 transition-colors"
+                    className="flex h-[200px] flex-col justify-between border bg-white px-3 py-3"
                     style={{ borderColor: BORDER }}
                   >
-                    {/* Top row mirrors the dashboard vehicle card: a meta
-                        chip on the left, heart toggle on the right. */}
                     <div className="flex items-start justify-between gap-2">
-                      <div
-                        className="flex min-w-0 items-center gap-3 text-[10.5px] font-medium"
-                        style={{ color: MUTED }}
-                      >
+                      <div className="flex min-w-0 items-center gap-3 text-[10.5px] font-medium" style={{ color: MUTED }}>
                         <span className="inline-flex items-center gap-1">
-                          <Footprints className="h-3 w-3" style={{ color: INK }} />
-                          <strong className="font-semibold" style={{ color: INK }}>
-                            Bali fleet
-                          </strong>
-                        </span>
-                        <span className="inline-flex items-center gap-1">
-                          <Star
-                            className="h-3 w-3"
-                            style={{ color: STAR, fill: STAR }}
-                          />
-                          <strong className="font-semibold" style={{ color: INK }}>
-                            4.9
-                          </strong>
+                          <Star className="h-3 w-3" style={{ color: STAR, fill: STAR }} />
+                          <strong className="font-semibold" style={{ color: INK }}>4.9</strong>
+                          <span style={{ color: FAINT }}>(120)</span>
                         </span>
                       </div>
                       <button
                         type="button"
                         onClick={() => toggleFavorite(car.name)}
-                        aria-label={
-                          isFavorite
-                            ? `Remove ${car.name} from saved`
-                            : `Save ${car.name}`
-                        }
+                        aria-label={isFavorite ? `Remove ${car.name} from saved` : `Save ${car.name}`}
                         aria-pressed={isFavorite}
-                        className="grid h-6 w-6 place-items-center rounded-full transition-colors hover:bg-[#f5f5f5]"
+                        className="grid h-6 w-6 shrink-0 place-items-center rounded-full transition-colors hover:bg-[#f5f5f5]"
                         style={{ color: INK }}
                       >
                         <Heart
                           className="h-[16px] w-[16px]"
                           strokeWidth={1.8}
-                          style={
-                            isFavorite
-                              ? { color: HEART, fill: HEART }
-                              : undefined
-                          }
+                          style={isFavorite ? { color: HEART, fill: HEART } : undefined}
                         />
                       </button>
                     </div>
 
-                    {/* Car cutout */}
-                    <div className="relative mt-2 flex h-32 lg:h-36 items-center justify-center">
-                      <img
-                        src={car.img}
-                        alt={car.name}
-                        className="absolute inset-0 h-full w-full object-contain"
-                      />
+                    <div className="flex flex-1 items-center justify-center px-2">
+                      <img src={car.img} alt={car.name} className="max-h-[96px] w-full scale-[1.12] object-contain" />
                     </div>
 
-                    {/* Spec strip */}
-                    <div
-                      className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]"
-                      style={{ color: MUTED }}
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        <Users className="h-3 w-3" /> {car.seats} Seats
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Cog className="h-3 w-3" /> {car.trans}
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Gauge className="h-3 w-3" /> {car.cc}
-                      </span>
-                    </div>
-
-                    {/* Name + price + CTA */}
-                    <div className="mt-3 flex items-end justify-between">
-                      <div>
-                        <h3
-                          className="text-[15px] font-semibold leading-tight"
-                          style={{ color: INK }}
-                        >
-                          {car.name}
-                        </h3>
-                        <div className="mt-2 flex items-baseline gap-1">
-                          <span
-                            className="text-[22px] font-bold leading-none"
-                            style={{ color: INK }}
-                          >
-                            ${car.price}
-                          </span>
-                          <span
-                            className="text-[11px] font-medium"
-                            style={{ color: MUTED }}
-                          >
-                            / day
-                          </span>
-                        </div>
+                    <div className="flex items-end justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="truncate text-[14px] font-semibold leading-tight" style={{ color: INK }}>{car.name}</div>
+                        <div className="mt-0.5 truncate text-[10px] font-medium" style={{ color: MUTED }}>{car.seats} Seats · {car.trans} · {car.cc}</div>
                       </div>
-                      <OutlineButton
-                        type="button"
-                        className="!h-[36px] !px-3 !text-[11.5px]"
-                      >
-                        View details
-                      </OutlineButton>
+                      <div className="shrink-0 text-right whitespace-nowrap">
+                        <span className="text-[14px] font-bold leading-none" style={{ color: INK }}>${car.price}</span>
+                        <span className="ml-1 text-[10px] font-medium" style={{ color: FAINT }}>/ day</span>
+                      </div>
                     </div>
                   </article>
                 );
@@ -825,7 +761,7 @@ export default function Home() {
         </section>
 
         {/* ==================== 5. TOP DESTINATIONS ==================== */}
-        <section id="destinations" className="px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+        <section id="destinations" className="px-4 sm:px-6 lg:px-8 py-10 lg:pt-0 lg:pb-14">
           <div className="mx-auto max-w-7xl">
             <div className="mb-5 flex items-end justify-between gap-4">
               <div>
@@ -890,7 +826,7 @@ export default function Home() {
         </section>
 
         {/* ==================== 6. TESTIMONIALS ==================== */}
-        <section id="reviews" className="px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+        <section id="reviews" className="px-4 sm:px-6 lg:px-8 py-10 lg:pt-0 lg:pb-14">
           <div className="mx-auto max-w-7xl">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
               <div>
@@ -1001,14 +937,14 @@ export default function Home() {
         </section>
 
         {/* ==================== 7. CTA BANNER ==================== */}
-        <section className="px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
+        <section className="px-4 sm:px-6 lg:px-8 py-10 lg:pt-0 lg:pb-14">
           <div
             className="relative mx-auto max-w-7xl overflow-hidden rounded-[12px]"
             style={{ backgroundColor: INK }}
           >
             <div className="grid lg:grid-cols-[1fr_1fr]">
               <div className="relative z-10 p-8 lg:p-12">
-                <div className="mb-3 inline-flex items-center gap-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/60">
+                <div className="mb-3 inline-flex items-center gap-1 text-[10.5px] font-semibold uppercase tracking-[0.18em] text-white/80">
                   <Star
                     className="h-3 w-3"
                     style={{ color: STAR, fill: STAR }}
@@ -1018,6 +954,7 @@ export default function Home() {
                 <h2
                   className="font-bold leading-tight text-white"
                   style={{
+                    color: "#ffffff",
                     margin: "0 0 0.75rem 0",
                     fontSize: "clamp(1.875rem, 1.25rem + 1.5vw, 2.5rem)",
                     letterSpacing: "-0.02em",
@@ -1026,7 +963,7 @@ export default function Home() {
                 >
                   Ready to explore Bali?
                 </h2>
-                <p className="mb-7 max-w-md text-[14px] text-white/75">
+                <p className="mb-7 max-w-md text-[14px] text-white/85">
                   Book your ride in minutes and hit the road with confidence.
                 </p>
                 <div className="flex flex-wrap gap-3">

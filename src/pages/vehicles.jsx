@@ -16,6 +16,7 @@ import {
   MapPin,
   Phone,
   Shield,
+  Star,
   Users,
 } from "lucide-react";
 
@@ -413,28 +414,23 @@ function DiscountBadge({ label }) {
 function VehicleCard({ car, favorited, onToggleFavorite }) {
   return (
     <article
-      className="flex flex-col rounded-[8px] border bg-white p-4 lg:p-5 transition-colors"
+      className="flex h-[200px] flex-col justify-between border bg-white px-3 py-3"
       style={{ borderColor: BORDER }}
     >
-      {/* Top row — discount on left, heart on right. */}
-      <div className="mb-2 flex items-start justify-between gap-2">
-        <div>
-          {car.discount ? (
-            <DiscountBadge label={car.discount} />
-          ) : (
-            <span className="block h-[18px]" aria-hidden />
-          )}
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-3 text-[10.5px] font-medium" style={{ color: MUTED }}>
+          <span className="inline-flex items-center gap-1">
+            <Star className="h-3 w-3 fill-[#ffc933] text-[#ffc933]" />
+            <strong className="font-semibold" style={{ color: INK }}>{car.rating || "4.9"}</strong>
+            <span style={{ color: FAINT }}>({car.reviews || 120})</span>
+          </span>
         </div>
         <button
           type="button"
-          aria-label={
-            favorited
-              ? `Remove ${car.name} from favorites`
-              : `Save ${car.name} to favorites`
-          }
+          aria-label={favorited ? `Remove ${car.name} from favorites` : `Save ${car.name}`}
           aria-pressed={favorited}
           onClick={() => onToggleFavorite(car.id)}
-          className="grid h-7 w-7 place-items-center rounded-full transition-colors hover:bg-[#f5f5f5]"
+          className="grid h-6 w-6 shrink-0 place-items-center rounded-full transition-colors hover:bg-[#f5f5f5]"
           style={{ color: INK }}
         >
           <Heart
@@ -445,84 +441,19 @@ function VehicleCard({ car, favorited, onToggleFavorite }) {
         </button>
       </div>
 
-      {/* Car cutout */}
-      <div className="relative -mx-2 mb-3 h-28 sm:h-32 lg:h-36">
-        <img
-          src="/images/mercy.png"
-          alt={car.name}
-          loading="lazy"
-          className="absolute inset-0 h-full w-full object-contain"
-        />
+      <div className="flex flex-1 items-center justify-center px-2">
+        <img src="/images/mercy.png" alt={car.name} loading="lazy" className="max-h-[96px] w-full scale-[1.12] object-contain" />
       </div>
 
-      {/* Name + type chip */}
-      <div className="mb-2 flex items-center gap-2">
-        <h3
-          className="text-[15px] font-semibold leading-tight"
-          style={{ color: INK }}
-        >
-          {car.name}
-        </h3>
-        <TypeBadge>{car.type}</TypeBadge>
-      </div>
-
-      {/* Specs row */}
-      <div
-        className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]"
-        style={{ color: MUTED }}
-      >
-        <span className="inline-flex items-center gap-1">
-          <Users className="h-3 w-3" /> {car.seats} Seats
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <Cog className="h-3 w-3" /> {car.trans}
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <Gauge className="h-3 w-3" /> {car.engine}
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <Briefcase className="h-3 w-3" /> {car.bags}{" "}
-          {car.bags === 1 ? "Bag" : "Bags"}
-        </span>
-      </div>
-
-      {/* Price */}
-      <div className="mb-4 flex items-baseline gap-2">
-        <span
-          className="text-[22px] font-bold leading-none"
-          style={{ color: INK }}
-        >
-          ${car.price}
-        </span>
-        <span className="text-[11px]" style={{ color: MUTED }}>
-          / day
-        </span>
-        {car.oldPrice && (
-          <span
-            className="ml-auto text-[11px] line-through"
-            style={{ color: FAINT }}
-          >
-            ${car.oldPrice}
-          </span>
-        )}
-      </div>
-
-      {/* CTAs — outlined "View details" + solid ink "Book now". */}
-      <div className="mt-auto grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          className="inline-flex h-[36px] items-center justify-center rounded-[6px] border text-[11.5px] font-semibold transition-colors hover:bg-[#f5f5f5]"
-          style={{ borderColor: INK, color: INK }}
-        >
-          View details
-        </button>
-        <button
-          type="button"
-          className="inline-flex h-[36px] items-center justify-center rounded-[6px] text-[11.5px] font-bold text-white transition-colors hover:bg-[#1f1f1f]"
-          style={{ backgroundColor: INK }}
-        >
-          Book now
-        </button>
+      <div className="flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          <div className="truncate text-[14px] font-semibold leading-tight" style={{ color: INK }}>{car.name}</div>
+          <div className="mt-0.5 truncate text-[10px] font-medium" style={{ color: MUTED }}>{car.seats} Seats · {car.trans} · {car.engine}</div>
+        </div>
+        <div className="shrink-0 text-right whitespace-nowrap">
+          <span className="text-[14px] font-bold leading-none" style={{ color: INK }}>${car.price}</span>
+          <span className="ml-1 text-[10px] font-medium" style={{ color: FAINT }}>/ day</span>
+        </div>
       </div>
     </article>
   );

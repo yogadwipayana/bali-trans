@@ -26,11 +26,11 @@ const DEMO_USER = {
 const NAV_LINKS = [
   { label: "Home", href: "/", isRoute: true },
   { label: "Vehicles", href: "/vehicles", isRoute: true },
-  { label: "Destinations", href: "/#destinations" },
-  { label: "Services", href: "/#services" },
-  { label: "Reviews", href: "/#reviews" },
-  { label: "About us", href: "/#about-us" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Destinations", href: "/destinations", isRoute: true },
+  { label: "Services", href: "/services", isRoute: true },
+  { label: "Reviews", href: "/reviews", isRoute: true },
+  { label: "About us", href: "/about", isRoute: true },
+  { label: "Contact", href: "/contact", isRoute: true },
 ];
 
 // Map a pathname to the matching nav label so the underline lights up
@@ -266,48 +266,49 @@ export function Header({ activeNav }) {
         </div>
       </div>
       {mobileOpen && (
-        <div className="lg:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-3">
-          {NAV_LINKS.map((link) => renderMobileNavLink(link, () => setMobileOpen(false)))}
-          <div className="pt-3 border-t border-gray-100 flex flex-col gap-3">
+        <div className="lg:hidden fixed inset-0 top-[48px] z-50 bg-white flex flex-col">
+          <nav className="flex-1 overflow-y-auto px-6 pt-8 pb-6">
+            <div className="space-y-1">
+              {NAV_LINKS.map((link) => {
+                const isActive = link.label === currentNav;
+                const className = `flex items-center justify-between py-3 border-b border-gray-100 text-[15px] font-medium ${isActive ? "text-[#0f0f0f]" : "text-[#7c7c7c]"}`;
+                const inner = (
+                  <>
+                    {link.label}
+                    {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#0f0f0f]" />}
+                  </>
+                );
+                if (link.isRoute) {
+                  return <Link key={link.label} to={link.href} className={className} onClick={() => setMobileOpen(false)}>{inner}</Link>;
+                }
+                return <a key={link.label} href={link.href} className={className} onClick={() => setMobileOpen(false)}>{inner}</a>;
+              })}
+            </div>
+          </nav>
+          <div className="px-6 pb-8 space-y-3">
             {isAuthed ? (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <img
-                    src={DEMO_USER.avatar}
-                    alt=""
-                    className="w-9 h-9 rounded-full object-cover"
-                  />
-                  <div className="leading-tight">
-                    <div className="text-sm font-semibold text-[#1a1a1a]">{DEMO_USER.name}</div>
-                    <div className="text-[11px] text-gray-500">View account</div>
-                  </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-[#f3f4f4]">
+                <img src={DEMO_USER.avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+                <div className="leading-tight">
+                  <div className="text-sm font-semibold text-[#0f0f0f]">{DEMO_USER.name}</div>
+                  <div className="text-[11px] text-[#7c7c7c]">View account</div>
                 </div>
-                <button
-                  type="button"
-                  aria-label="Notifications"
-                  className="relative w-9 h-9 rounded-full flex items-center justify-center text-gray-600 bg-gray-50"
-                >
-                  <Bell className="w-[18px] h-[18px]" strokeWidth={1.75} />
-                  {DEMO_USER.notifications > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">
-                      {DEMO_USER.notifications}
-                    </span>
-                  )}
-                </button>
               </div>
             ) : (
               <>
                 <Link
                   to="/sign-in"
-                  className="flex items-center gap-2 text-sm font-medium"
+                  className="flex items-center justify-center h-[44px] rounded-[6px] border text-[13px] font-semibold text-[#0f0f0f]"
+                  style={{ borderColor: "#e6e6e6" }}
                   onClick={() => setMobileOpen(false)}
                 >
-                  <User className="w-4 h-4" /> Sign in
+                  Sign in
                 </Link>
                 <a
                   href="#book"
-                  className="btn-glass inline-flex items-center justify-center px-5 py-2.5 text-white text-sm font-semibold rounded-lg"
+                  className="flex items-center justify-center h-[44px] rounded-[6px] text-[13px] font-bold text-white"
                   style={{ backgroundColor: TEAL }}
+                  onClick={() => setMobileOpen(false)}
                 >
                   Book now
                 </a>
